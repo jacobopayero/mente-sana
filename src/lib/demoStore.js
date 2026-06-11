@@ -60,6 +60,10 @@ function semilla() {
     notas_coordinacion: [
       { id: id(), paciente_id: paciente.id, autor_id: terapeuta.id, categoria: "Evolucion", texto: "Buen avance esta semana. Sigamos con calma.", visible_paciente: true, creado_en: diasAtras(2) },
     ],
+    plan_seguridad: { paciente_id: paciente.id, senales: "", calma: "", personas: "", motivos: "" },
+    medicamentos: [
+      { id: id(), paciente_id: paciente.id, nombre: "Sertralina", dosis: "1 tableta", horario: "08:00", nota: "Con el desayuno", activo: true, creado_en: diasAtras(10) },
+    ],
     recursos: [
       { id: id(), tipo: "motivacion", titulo: "Un paso a la vez", descripcion: "Recordatorio para los días difíciles.", texto: "Sanar no es lineal. Cada día que lo intentas, cuenta.", creado_en: diasAtras(6) },
       { id: id(), tipo: "instructivo", titulo: "Respiración 4-7-8", descripcion: "Una herramienta para momentos de ansiedad.", texto: "Inhala 4 segundos, sostén 7, exhala 8. Repite 4 veces.", creado_en: diasAtras(6) },
@@ -317,5 +321,46 @@ export const demo = {
       db.notas_coordinacion.push(guardado);
     });
     return guardado;
+  },
+
+  // ---- Plan de seguridad ----------------------------------------------------
+  async getPlanSeguridad() {
+    const db = leer();
+    return db.plan_seguridad || { senales: "", calma: "", personas: "", motivos: "" };
+  },
+  async guardarPlanSeguridad(campos) {
+    let guardado;
+    actualizar((db) => {
+      db.plan_seguridad = { ...(db.plan_seguridad || {}), paciente_id: db.perfil.id, ...campos };
+      guardado = db.plan_seguridad;
+    });
+    return guardado;
+  },
+
+  // ---- Medicamentos ---------------------------------------------------------
+  async listarMedicamentos() {
+    return [...leer().medicamentos].filter((m) => m.activo);
+  },
+  async crearMedicamento({ nombre, dosis, horario, nota }) {
+    let guardado;
+    actualizar((db) => {
+      guardado = {
+        id: id(),
+        paciente_id: db.perfil.id,
+        nombre,
+        dosis,
+        horario,
+        nota,
+        activo: true,
+        creado_en: hoy(),
+      };
+      db.medicamentos.push(guardado);
+    });
+    return guardado;
+  },
+  async eliminarMedicamento(medId) {
+    actualizar((db) => {
+      db.medicamentos = db.medicamentos.filter((m) => m.id !== medId);
+    });
   },
 };

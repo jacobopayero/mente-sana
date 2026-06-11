@@ -356,3 +356,62 @@ export async function notasDePaciente(pacienteId) {
   if (!estaConfigurado) return demo.notasDePaciente(pacienteId);
   return listarNotas(pacienteId);
 }
+
+// ----------------------------------------------------------------------------
+//  PLAN DE SEGURIDAD
+// ----------------------------------------------------------------------------
+export async function getPlanSeguridad() {
+  if (!estaConfigurado) return demo.getPlanSeguridad();
+  const user = await usuarioActual();
+  const { data, error } = await supabase
+    .from("plan_seguridad")
+    .select("*")
+    .eq("paciente_id", user.id)
+    .maybeSingle();
+  if (error) throw error;
+  return data || { senales: "", calma: "", personas: "", motivos: "" };
+}
+
+export async function guardarPlanSeguridad(campos) {
+  if (!estaConfigurado) return demo.guardarPlanSeguridad(campos);
+  const user = await usuarioActual();
+  const { data, error } = await supabase
+    .from("plan_seguridad")
+    .upsert({ paciente_id: user.id, ...campos, actualizado_en: new Date().toISOString() })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// ----------------------------------------------------------------------------
+//  MEDICAMENTOS  (texto libre; nunca métricas corporales)
+// ----------------------------------------------------------------------------
+export async function listarMedicamentos() {
+  if (!estaConfigurado) return demo.listarMedicamentos();
+  const { data, error } = await supabase
+    .from("medicamentos")
+    .select("*")
+    .eq("activo", true)
+    .order("horario", { ascending: true });
+  if (error) throw error;
+  return data;
+}
+
+export async function crearMedicamento({ nombre, dosis, horario, nota }) {
+  if (!estaConfigurado) return demo.crearMedicamento({ nombre, dosis, horario, nota });
+  const user = await usuarioActual();
+  const { data, error } = await supabase
+    .from("medicamentos")
+    .insert({ paciente_id: user.id, nombre, dosis, horario, nota })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function eliminarMedicamento(id) {
+  if (!estaConfigurado) return demo.eliminarMedicamento(id);
+  const { error } = await supabase.from("medicamentos").delete().eq("id", id);
+  if (error) throw error;
+}

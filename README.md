@@ -42,6 +42,16 @@ entrar, la lista de sus pacientes y, por cada uno: ánimo y sueño recientes, al
 descanso, tareas (puede asignar nuevas) y notas de coordinación (puede escribirlas y
 decidir si el paciente las ve). En modo demo, usa el botón **"Entrar como profesional"**.
 
+**Bienestar y seguridad:**
+- **Botón SOS** flotante: en cualquier pantalla, lleva al instante a la pantalla de Apoyo
+  (respiración, línea de ayuda y plan de seguridad).
+- **Plan de seguridad** personal: señales de alerta, qué me calma, personas de confianza y
+  motivos para seguir. Privado del paciente; su equipo lo puede leer.
+- **Bloqueo con PIN**: protege la app en el dispositivo (hash con sal, nunca el PIN en claro).
+  En la app nativa de iOS puede sumarse Face ID.
+- **Medicación con recordatorios** y **citas/tareas al calendario**: generan un evento `.ics`
+  con alarma que el Calendario/Recordatorios del iPhone dispara aunque la app esté cerrada.
+
 ---
 
 ## Conectar Supabase (datos reales)

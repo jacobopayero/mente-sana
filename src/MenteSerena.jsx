@@ -31,6 +31,17 @@ import {
 } from "lucide-react";
 
 import PanelProfesional from "./PanelProfesional.jsx";
+import PinLock from "./PinLock.jsx";
+import {
+  VistaMedicacion,
+  VistaPlanSeguridad,
+  VistaAjustes,
+  SOSBoton,
+  BotonCalendario,
+} from "./Bienestar.jsx";
+import { Pill, ShieldCheck, Settings } from "lucide-react";
+import { pinActivo } from "./lib/pin";
+import { recordarCita } from "./lib/calendario";
 import {
   estaConfigurado,
   registrarse,
@@ -111,6 +122,7 @@ const fechaLegible = (iso) => {
 export default function MenteSerena() {
   const [cargandoSesion, setCargandoSesion] = useState(true);
   const [perfil, setPerfil] = useState(null);
+  const [bloqueado, setBloqueado] = useState(pinActivo());
 
   const refrescarPerfil = useCallback(async () => {
     try {
@@ -127,6 +139,10 @@ export default function MenteSerena() {
   useEffect(() => {
     refrescarPerfil();
   }, [refrescarPerfil]);
+
+  if (bloqueado) {
+    return <PinLock alDesbloquear={() => setBloqueado(false)} />;
+  }
 
   if (cargandoSesion) {
     return <div className="cargando">Cargando…</div>;
@@ -287,8 +303,13 @@ function AppPaciente({ perfil, alSalir }) {
         {vista === "citas" && <VistaCitas />}
         {vista === "tareas" && <VistaTareas />}
         {vista === "recursos" && <VistaRecursos />}
-        {vista === "apoyo" && <VistaApoyo />}
+        {vista === "apoyo" && <VistaApoyo irA={setVista} />}
+        {vista === "medicacion" && <VistaMedicacion irA={setVista} />}
+        {vista === "plan" && <VistaPlanSeguridad irA={setVista} />}
+        {vista === "ajustes" && <VistaAjustes irA={setVista} />}
       </div>
+
+      {vista !== "apoyo" && <SOSBoton onClick={() => setVista("apoyo")} />}
 
       <nav className="nav">
         {TABS.map((t) => {
@@ -337,9 +358,14 @@ function VistaInicio({ perfil, irA, salir }) {
             <p className="saludo">{saludo},</p>
             <h1>{perfil.nombre || "hola"}</h1>
           </div>
-          <button className="item" style={{ padding: 8 }} onClick={salir} title="Cerrar sesión">
-            <LogOut size={20} color="var(--tinta-suave)" />
-          </button>
+          <div style={{ display: "flex", gap: 4 }}>
+            <button style={{ padding: 8 }} onClick={() => irA("ajustes")} title="Ajustes">
+              <Settings size={20} color="var(--tinta-suave)" />
+            </button>
+            <button style={{ padding: 8 }} onClick={salir} title="Cerrar sesión">
+              <LogOut size={20} color="var(--tinta-suave)" />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -354,6 +380,18 @@ function VistaInicio({ perfil, irA, salir }) {
             <Moon size={18} /> Sueño
           </button>
         </div>
+      </div>
+
+      <div className="seccion-titulo">
+        <ShieldCheck size={15} /> Tu cuidado
+      </div>
+      <div className="tarjeta">
+        <button className="btn fantasma" style={{ marginBottom: 10 }} onClick={() => irA("medicacion")}>
+          <Pill size={18} /> Medicación y recordatorios
+        </button>
+        <button className="btn fantasma" onClick={() => irA("plan")}>
+          <ShieldCheck size={18} /> Mi plan de seguridad
+        </button>
       </div>
 
       {notas.length > 0 && (
@@ -809,6 +847,7 @@ function VistaCitas() {
                 <div className="meta">
                   {c.modalidad} · {c.tipo}
                 </div>
+                <BotonCalendario texto="Recordarme" onClick={() => recordarCita(c)} />
               </div>
               <button onClick={() => cancelar(c.id)} title="Cancelar" style={{ color: "var(--tinta-suave)" }}>
                 <Trash2 size={18} />
@@ -943,7 +982,7 @@ function VistaRecursos() {
 // ============================================================================
 //  Apoyo
 // ============================================================================
-function VistaApoyo() {
+function VistaApoyo({ irA }) {
   return (
     <>
       <header className="encabezado">
@@ -972,6 +1011,10 @@ function VistaApoyo() {
       <p className="sub" style={{ padding: "0 4px" }}>
         {LINEA_APOYO.nota}
       </p>
+
+      <button className="btn" style={{ marginBottom: 14 }} onClick={() => irA("plan")}>
+        <ShieldCheck size={18} /> Abrir mi plan de seguridad
+      </button>
 
       <div className="seccion-titulo">
         <Wind size={15} /> Una pausa para respirar
