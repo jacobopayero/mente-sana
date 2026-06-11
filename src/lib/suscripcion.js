@@ -9,7 +9,7 @@
 const CLAVE = "mente-serena-suscripcion";
 
 // Precio anual — EDITAR con el valor real definido por el titular.
-export const PRECIO_ANUAL = "RD$1,200";
+export const PRECIO_ANUAL = "US$20";
 export const PRECIO_NOTA = "por año (precio de ejemplo, por confirmar)";
 
 export function estadoSuscripcion() {
