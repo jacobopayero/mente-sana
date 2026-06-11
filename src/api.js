@@ -473,6 +473,37 @@ export async function eliminarMedicamento(id) {
   if (error) throw error;
 }
 
+// ----------------------------------------------------------------------------
+//  REFERIDOS (profesional → profesional)
+// ----------------------------------------------------------------------------
+export async function listarReferidos() {
+  if (!estaConfigurado) return demo.listarReferidos();
+  const { data, error } = await supabase
+    .from("referidos")
+    .select(`*, referente:referido_por ( nombre, titulo ), destino:hacia ( nombre, titulo )`)
+    .order("creado_en", { ascending: false });
+  if (error) throw error;
+  const nombre = (p) => (p ? `${p.titulo ? p.titulo + " " : ""}${p.nombre}` : "");
+  return (data || []).map((r) => ({
+    ...r,
+    fecha: (r.creado_en || "").slice(0, 10),
+    referido_por_nombre: nombre(r.referente),
+    hacia_nombre: nombre(r.destino),
+  }));
+}
+
+export async function crearReferido({ paciente_nombre, hacia_id, nota }) {
+  if (!estaConfigurado) return demo.crearReferido({ paciente_nombre, hacia_id, nota });
+  const user = await usuarioActual();
+  const { data, error } = await supabase
+    .from("referidos")
+    .insert({ paciente_nombre, referido_por: user.id, hacia: hacia_id, nota })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
 // Vista del profesional: medicamentos de un paciente (RLS controla el acceso).
 export async function medicamentosDePaciente(pacienteId) {
   if (!estaConfigurado) return demo.medicamentosDePaciente(pacienteId);

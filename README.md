@@ -63,6 +63,14 @@ decidir si el paciente las ve). En modo demo, usa el botón **"Entrar como profe
   clínica** (historia médica) — fecha de nacimiento, contacto de emergencia, alergias,
   condiciones relevantes, tratamientos previos y notas. **Sin** peso, IMC ni medidas
   corporales. La foto y la ficha también se ven en el panel del profesional.
+- **Expediente completo** (profesional): consolida todo el histórico del paciente en un
+  documento exportable a **PDF** (Imprimir) para el record clínico.
+- **Registro de referidos** (profesional → profesional): deja constancia de quién refirió a
+  cada paciente y permite registrar nuevas derivaciones (`supabase/06_referidos.sql`).
+- **Plan anual / suscripción** (demo abierto): pantalla de plan con precio anual y estado
+  "activa hasta…". El cobro real (Stripe / Apple-RevenueCat) se conecta después.
+- **Derechos reservados**: aviso legal de autoría (Jacobo Payero) en acceso, bienvenida,
+  panel y expediente.
 
 ---
 

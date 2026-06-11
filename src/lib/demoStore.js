@@ -96,6 +96,20 @@ function semilla() {
     diario: [
       { id: id(), paciente_id: paciente.id, sugerencia: "¿Qué necesité hoy?", texto: "Necesité ir más despacio y pedir ayuda. Lo hice.", creado_en: diasAtras(3) },
     ],
+    // Registro de referidos (profesional → profesional). Ej.: el Dr. Musa
+    // refirió a la paciente a la terapeuta.
+    referidos: [
+      {
+        id: id(),
+        paciente_nombre: paciente.nombre,
+        referido_por_id: psiquiatraMusa.id,
+        referido_por_nombre: "Dr. Musa",
+        hacia_id: terapeuta.id,
+        hacia_nombre: "Lic. Alexandra García",
+        nota: "Derivación para terapia familiar/TCA.",
+        fecha: diasAtras(20),
+      },
+    ],
     medicamentos: [
       { id: id(), paciente_id: paciente.id, nombre: "Sertralina", dosis: "1 tableta", horario: "08:00", nota: "Con el desayuno", activo: true, creado_en: diasAtras(10) },
     ],
@@ -295,7 +309,16 @@ export const demo = {
   // ---- Panel del profesional ----------------------------------------------
   async misPacientes() {
     const db = leer();
-    return [{ id: db.perfil.id, nombre: db.perfil.nombre, email: db.perfil.email, foto_url: db.perfil.foto_url }];
+    const ref = (db.referidos || []).find((r) => r.paciente_nombre === db.perfil.nombre);
+    return [
+      {
+        id: db.perfil.id,
+        nombre: db.perfil.nombre,
+        email: db.perfil.email,
+        foto_url: db.perfil.foto_url,
+        referido_por_nombre: ref?.referido_por_nombre || "",
+      },
+    ];
   },
   async animoDePaciente(pid) {
     return leer()
@@ -402,6 +425,36 @@ export const demo = {
   },
   async medicamentosDePaciente(pid) {
     return leer().medicamentos.filter((m) => m.paciente_id === pid && m.activo);
+  },
+
+  // ---- Referidos (profesional → profesional) -------------------------------
+  async listarReferidos() {
+    const db = leer();
+    const profId = db.sesion?.profId;
+    return (db.referidos || [])
+      .filter((r) => !profId || r.referido_por_id === profId || r.hacia_id === profId)
+      .sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
+  },
+  async crearReferido({ paciente_nombre, hacia_id, nota }) {
+    let g;
+    actualizar((db) => {
+      const yo = db.equipo.find((p) => p.id === db.sesion?.profId);
+      const hacia = db.equipo.find((p) => p.id === hacia_id);
+      const nombrePro = (p) => (p ? `${p.titulo ? p.titulo + " " : ""}${p.nombre}` : "");
+      g = {
+        id: id(),
+        paciente_nombre,
+        referido_por_id: yo?.id,
+        referido_por_nombre: nombrePro(yo),
+        hacia_id,
+        hacia_nombre: nombrePro(hacia),
+        nota: nota || "",
+        fecha: hoy(),
+      };
+      if (!db.referidos) db.referidos = [];
+      db.referidos.push(g);
+    });
+    return g;
   },
 
   // ---- Perfil y ficha clínica ----------------------------------------------

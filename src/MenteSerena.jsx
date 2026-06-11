@@ -44,6 +44,8 @@ import { VistaDiario } from "./Diario.jsx";
 import Bienvenida, { onboardingAceptado } from "./Bienvenida.jsx";
 import { VistaPerfil } from "./Perfil.jsx";
 import PieLegal from "./PieLegal.jsx";
+import { VistaSuscripcion } from "./Suscripcion.jsx";
+import { Crown } from "lucide-react";
 import { Pill, ShieldCheck, Settings, BookHeart, Bell, User } from "lucide-react";
 import { pinActivo } from "./lib/pin";
 import { recordarCita, recordarTarea, recordarRegistroAnimo } from "./lib/calendario";
@@ -341,6 +343,7 @@ function AppPaciente({ perfil, alSalir }) {
         {vista === "herramientas" && <VistaHerramientas irA={setVista} />}
         {vista === "diario" && <VistaDiario irA={setVista} />}
         {vista === "perfil" && <VistaPerfil irA={setVista} alActualizar={alSalir} />}
+        {vista === "suscripcion" && <VistaSuscripcion irA={setVista} />}
       </div>
 
       {vista !== "apoyo" && <SOSBoton onClick={() => setVista("apoyo")} />}
@@ -448,8 +451,11 @@ function VistaInicio({ perfil, irA, salir }) {
         <button className="btn fantasma" style={{ marginBottom: 10 }} onClick={() => irA("medicacion")}>
           <Pill size={18} /> Medicación y recordatorios
         </button>
-        <button className="btn fantasma" onClick={() => irA("plan")}>
+        <button className="btn fantasma" style={{ marginBottom: 10 }} onClick={() => irA("plan")}>
           <ShieldCheck size={18} /> Mi plan de seguridad
+        </button>
+        <button className="btn fantasma" onClick={() => irA("suscripcion")}>
+          <Crown size={18} /> Plan anual
         </button>
       </div>
 

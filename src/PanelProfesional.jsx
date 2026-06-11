@@ -27,11 +27,13 @@ import {
   MapPin,
   FileText,
   Pill,
+  Share2,
 } from "lucide-react";
 
 import {
   cerrarSesion,
   misPacientes,
+  miEquipo,
   animoDePaciente,
   suenoDePaciente,
   alertasDePaciente,
@@ -42,6 +44,8 @@ import {
   citasDePaciente,
   fichaDePaciente,
   medicamentosDePaciente,
+  listarReferidos,
+  crearReferido,
 } from "./api";
 import { VistaExpediente } from "./Expediente.jsx";
 import PieLegal from "./PieLegal.jsx";
@@ -182,7 +186,97 @@ function ListaPacientes({ perfil, salir, onAbrir }) {
         )}
       </div>
 
+      <RegistroReferidos />
+
       <PieLegal />
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+function RegistroReferidos() {
+  const [refs, setRefs] = useState([]);
+  const [equipo, setEquipo] = useState([]);
+  const [form, setForm] = useState(false);
+  const [pacienteNombre, setPacienteNombre] = useState("");
+  const [hacia, setHacia] = useState("");
+  const [nota, setNota] = useState("");
+
+  async function cargar() {
+    setRefs(await listarReferidos());
+  }
+  useEffect(() => {
+    cargar().catch(console.error);
+    miEquipo()
+      .then((e) => {
+        setEquipo(e);
+        if (e[0]) setHacia(e[0].id);
+      })
+      .catch(console.error);
+  }, []);
+
+  async function enviar(e) {
+    e.preventDefault();
+    if (!pacienteNombre.trim()) return;
+    await crearReferido({ paciente_nombre: pacienteNombre.trim(), hacia_id: hacia, nota: nota.trim() });
+    setPacienteNombre("");
+    setNota("");
+    setForm(false);
+    await cargar();
+  }
+
+  return (
+    <>
+      <div className="seccion-titulo">
+        <Share2 size={15} /> Registro de referidos
+      </div>
+      <div className="tarjeta">
+        {refs.length === 0 ? (
+          <p className="vacio" style={{ padding: 8 }}>Sin referidos registrados.</p>
+        ) : (
+          refs.map((r) => (
+            <div className="item" key={r.id} style={{ display: "block" }}>
+              <div className="titulo" style={{ fontWeight: 600 }}>{r.paciente_nombre}</div>
+              <div className="meta">
+                Referido por <strong>{r.referido_por_nombre || "—"}</strong> → {r.hacia_nombre || "—"} · {fechaLegible(r.fecha)}
+              </div>
+              {r.nota && <div className="meta" style={{ marginTop: 2 }}>“{r.nota}”</div>}
+            </div>
+          ))
+        )}
+
+        {!form ? (
+          <button className="btn fantasma" style={{ marginTop: 12 }} onClick={() => setForm(true)}>
+            <Plus size={16} /> Registrar referido
+          </button>
+        ) : (
+          <form onSubmit={enviar} style={{ marginTop: 12 }}>
+            <div className="campo">
+              <label>Paciente</label>
+              <input value={pacienteNombre} onChange={(e) => setPacienteNombre(e.target.value)} placeholder="Nombre del paciente" required />
+            </div>
+            <div className="campo">
+              <label>Referir a</label>
+              <select value={hacia} onChange={(e) => setHacia(e.target.value)}>
+                {equipo.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.titulo ? p.titulo + " " : ""}
+                    {p.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="campo">
+              <label>Nota (opcional)</label>
+              <input value={nota} onChange={(e) => setNota(e.target.value)} placeholder="Motivo de la derivación" />
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="btn" type="submit">Guardar</button>
+              <button className="btn secundario" type="button" onClick={() => setForm(false)}>Cancelar</button>
+            </div>
+          </form>
+        )}
+      </div>
     </>
   );
 }
@@ -250,7 +344,12 @@ function DetallePaciente({ paciente, onVolver, onExpediente }) {
               {(paciente.nombre || "?").split(" ").map((s) => s[0]).slice(0, 2).join("")}
             </div>
           )}
-          <h1 style={{ margin: 0 }}>{paciente.nombre}</h1>
+          <div>
+            <h1 style={{ margin: 0 }}>{paciente.nombre}</h1>
+            {paciente.referido_por_nombre && (
+              <p className="saludo" style={{ margin: "2px 0 0" }}>Referido por {paciente.referido_por_nombre}</p>
+            )}
+          </div>
         </div>
       </header>
 
