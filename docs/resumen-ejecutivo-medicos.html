@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<style>
+  :root{ --salvia:#5E7560; --salvia-osc:#44563f; --salvia-clara:#A8BBA2; --crema:#F5F2EC; --tinta:#2E3A2C; --suave:#6b7268; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color:var(--tinta); }
+  .pagina{ width:210mm; min-height:297mm; padding:0; margin:0 auto; background:#fff; }
+  .hero{ background:var(--salvia); color:#fff; padding:26px 30px; display:flex; align-items:center; gap:18px; }
+  .hero .logo{ width:60px; height:60px; flex-shrink:0; }
+  .hero h1{ margin:0; font-size:24px; letter-spacing:-.01em; }
+  .hero p{ margin:4px 0 0; opacity:.92; font-size:13px; }
+  .cuerpo{ padding:22px 30px; }
+  h2{ font-size:14px; text-transform:uppercase; letter-spacing:.06em; color:var(--salvia-osc); margin:20px 0 8px; border-bottom:2px solid var(--salvia-clara); padding-bottom:4px; }
+  p, li{ font-size:12.5px; line-height:1.5; }
+  .intro{ font-size:13.5px; }
+  .cols{ display:flex; gap:22px; }
+  .col{ flex:1; }
+  ul{ margin:6px 0; padding-left:18px; }
+  li{ margin:3px 0; }
+  .destacado{ background:var(--crema); border:1px solid var(--salvia-clara); border-radius:10px; padding:14px 16px; margin:10px 0; }
+  .precio{ display:flex; align-items:baseline; gap:10px; }
+  .precio .n{ font-size:30px; font-weight:800; color:var(--salvia-osc); }
+  .precio .t{ color:var(--suave); font-size:12.5px; }
+  .badge{ display:inline-block; background:var(--salvia-clara); color:var(--salvia-osc); font-weight:700; font-size:11px; padding:3px 10px; border-radius:999px; text-transform:uppercase; letter-spacing:.04em; }
+  .safe{ background:#eef1ea; border-left:4px solid var(--salvia); border-radius:6px; padding:12px 14px; font-size:12.5px; }
+  .pasos{ counter-reset:p; }
+  .pasos div{ position:relative; padding-left:30px; margin:6px 0; font-size:12.5px; }
+  .pasos div::before{ counter-increment:p; content:counter(p); position:absolute; left:0; top:-1px; width:21px; height:21px; background:var(--salvia); color:#fff; border-radius:50%; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+  .pie{ margin-top:18px; border-top:1px solid #e6e2d8; padding:12px 30px 24px; color:var(--suave); font-size:10.5px; }
+  .cta{ background:var(--salvia-osc); color:#fff; border-radius:10px; padding:14px 16px; font-size:13px; }
+  .cta a{ color:#fff; font-weight:700; }
+  strong{ color:var(--tinta); }
+</style>
+</head>
+<body>
+<div class="pagina">
+  <div class="hero">
+    <svg class="logo" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <rect width="512" height="512" rx="112" fill="#44563f"/>
+      <g fill="none" stroke="#F5F2EC" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M256 392c-70 0-118-46-118-112 0-58 40-104 84-104 18 0 30 8 34 14 4-6 16-14 34-14 44 0 84 46 84 104 0 66-48 112-118 112Z"/>
+        <path d="M256 200v160" opacity="0.5"/>
+      </g>
+      <circle cx="256" cy="150" r="30" fill="#A8BBA2"/>
+    </svg>
+    <div>
+      <h1>Mente Serena</h1>
+      <p>Resumen ejecutivo para profesionales de la salud · Acompañamiento clínico entre sesiones</p>
+    </div>
+  </div>
+
+  <div class="cuerpo">
+    <p class="intro">
+      <strong>Mente Serena</strong> es una aplicación de acompañamiento para pacientes en terapia que
+      conecta al paciente con su equipo de cuidado (terapeuta y psiquiatra) <strong>entre una consulta y la
+      siguiente</strong>. Con dirección clínica especializada en <strong>Trastornos de la Conducta
+      Alimentaria (TCA)</strong>, está diseñada para sostener el proceso terapéutico con seguridad y empatía.
+    </p>
+
+    <h2>El reto que resuelve</h2>
+    <p>
+      Entre sesiones, el clínico pierde visibilidad de cómo evoluciona el paciente; la información se
+      dispersa y la coordinación entre terapeuta y psiquiatra es difícil. Mente Serena centraliza el
+      seguimiento y lo deja listo para su consulta.
+    </p>
+
+    <div class="cols">
+      <div class="col">
+        <h2>Lo que usted obtiene</h2>
+        <ul>
+          <li><strong>Expediente completo</strong> del paciente, exportable a <strong>PDF</strong> para su record clínico.</li>
+          <li><strong>Tendencias</strong> de ánimo y calidad del descanso.</li>
+          <li><strong>Tareas terapéuticas</strong> asignables al paciente.</li>
+          <li><strong>Notas de coordinación</strong> con el equipo del caso.</li>
+          <li>Vista de <strong>medicación</strong> y <strong>alertas</strong> (p. ej. descanso pobre sostenido).</li>
+          <li><strong>Registro de referidos</strong> entre profesionales.</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h2>Lo que vive el paciente</h2>
+        <ul>
+          <li>Diario de <strong>ánimo</strong> y <strong>sueño</strong>, y journaling guiado.</li>
+          <li><strong>Caja de herramientas</strong>: respiración, anclaje, autocompasión.</li>
+          <li><strong>Plan de seguridad</strong> y <strong>botón SOS</strong>.</li>
+          <li><strong>Recordatorios</strong> de citas y medicación al calendario.</li>
+          <li><strong>Ficha clínica</strong> con foto y <strong>bloqueo con PIN</strong>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Diseño con seguridad clínica (clave en TCA)</h2>
+    <div class="safe">
+      La app <strong>no registra ni muestra peso, IMC, calorías ni medidas corporales</strong>; el sueño es
+      solo cualitativo y no genera planes de alimentación. Estas salvaguardas están integradas en el
+      producto y en la base de datos.
+    </div>
+
+    <h2>Privacidad y cumplimiento</h2>
+    <p>
+      Seguridad por filas (cada quien ve solo lo que le corresponde), consentimiento informado en el
+      primer ingreso, datos cifrados y respaldados, y lineamientos conforme a la <strong>Ley 172-13</strong> de
+      protección de datos (RD).
+    </p>
+
+    <div class="cols">
+      <div class="col">
+        <h2>Cómo funciona</h2>
+        <div class="pasos">
+          <div>Usted <strong>refiere</strong> a su paciente desde la app.</div>
+          <div>El paciente la <strong>descarga</strong> y queda <strong>vinculado a su equipo</strong>.</div>
+          <div>Usted ve su seguimiento y lo lleva a la <strong>consulta</strong>.</div>
+        </div>
+      </div>
+      <div class="col">
+        <h2>Acceso del paciente</h2>
+        <div class="destacado">
+          <span class="badge">Primera semana gratis</span>
+          <div class="precio" style="margin-top:8px;">
+            <span class="n">US$20</span><span class="t">por año, por paciente<br/>(tarifa de lanzamiento, por confirmar)</span>
+          </div>
+        </div>
+        <p style="margin:6px 0 0; color:var(--suave);">Sin costo para usted: el acceso lo cubre el paciente.</p>
+      </div>
+    </div>
+
+    <h2>Beneficios para su práctica</h2>
+    <ul>
+      <li>Mayor <strong>adherencia y continuidad</strong> del tratamiento entre sesiones.</li>
+      <li><strong>Ahorro de tiempo</strong>: el historial llega ordenado y exportable.</li>
+      <li><strong>Coordinación</strong> fluida entre terapeuta y psiquiatra del caso.</li>
+      <li>Un servicio <strong>diferenciado</strong> y moderno para sus pacientes.</li>
+    </ul>
+
+    <div class="cta">
+      <strong>Pruébela hoy:</strong> abra <a href="https://jacobopayero.github.io/mente-sana/">jacobopayero.github.io/mente-sana</a>
+      en su teléfono y entre en modo demo como <strong>terapeuta</strong> o <strong>psiquiatra</strong>.
+      Instálela desde Safari con “Añadir a pantalla de inicio”.
+    </div>
+  </div>
+
+  <div class="pie">
+    © <span id="anio">2026</span> Jacobo Payero. Todos los derechos reservados. Queda prohibida la reproducción total o
+    parcial de esta aplicación; cualquier duplicidad o similitud puede conllevar sanciones penales y civiles.
+    Documento confidencial con fines de presentación. Mente Serena es una herramienta de apoyo y no sustituye el
+    criterio clínico ni la atención de emergencia.
+  </div>
+</div>
+</body>
+</html>
