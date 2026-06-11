@@ -43,7 +43,7 @@ function semilla() {
     titulo: "Dr.",
     rol: "psiquiatra",
     perfiles_profesional: [
-      { especialidad: "Psiquiatría · TCA", credenciales: "Médico Psiquiatra", color_hex: "#6d6a9e" },
+      { especialidad: "Especialista en TCA", credenciales: "Médico Psiquiatra", color_hex: "#6d6a9e" },
     ],
   };
   const psiquiatraRodriguez = {
@@ -53,7 +53,7 @@ function semilla() {
     titulo: "Dr.",
     rol: "psiquiatra",
     perfiles_profesional: [
-      { especialidad: "Psiquiatría · TCA", credenciales: "Médico Psiquiatra", color_hex: "#7a6fa6" },
+      { especialidad: "Especialista en TCA", credenciales: "Médico Psiquiatra", color_hex: "#7a6fa6" },
     ],
   };
 

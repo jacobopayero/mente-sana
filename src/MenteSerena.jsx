@@ -108,6 +108,8 @@ const ICONO_RECURSO = {
   enlace: LinkIcon,
 };
 
+const ROL_LABEL = { terapeuta: "Terapeuta", psiquiatra: "Psiquiatra", admin: "Administración" };
+
 // Línea de apoyo — PENDIENTE de verificar con la dirección clínica antes de
 // abrir a pacientes reales (ver README, "Antes de abrir a pacientes reales").
 const LINEA_APOYO = {
@@ -529,12 +531,9 @@ function VistaInicio({ perfil, irA, salir }) {
                     {iniciales}
                   </div>
                   <div>
-                    <div className="titulo">
-                      {pro.titulo ? pro.titulo + " " : ""}
-                      {pro.nombre}
-                    </div>
+                    <div className="titulo">{pro.nombre}</div>
                     <div className="meta" style={{ fontSize: "0.82rem", color: "var(--tinta-suave)" }}>
-                      {prof.especialidad || (pro.rol === "psiquiatra" ? "Psiquiatría" : "Terapia")}
+                      {(ROL_LABEL[pro.rol] || "Profesional") + (prof.especialidad ? " · " + prof.especialidad : "")}
                     </div>
                   </div>
                 </div>
