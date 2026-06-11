@@ -1,0 +1,10 @@
+{
+  "appId": "do.menteserena.app",
+  "appName": "Mente Serena",
+  "webDir": "dist",
+  "backgroundColor": "#F5F2EC",
+  "ios": {
+    "contentInset": "always",
+    "backgroundColor": "#F5F2EC"
+  }
+}

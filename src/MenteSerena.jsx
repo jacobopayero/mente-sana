@@ -30,10 +30,12 @@ import {
   Wind,
 } from "lucide-react";
 
+import PanelProfesional from "./PanelProfesional.jsx";
 import {
   estaConfigurado,
   registrarse,
   iniciarSesion,
+  entrarDemoComo,
   cerrarSesion,
   miPerfil,
   miEquipo,
@@ -134,6 +136,11 @@ export default function MenteSerena() {
     return <PantallaAcceso alIngresar={refrescarPerfil} />;
   }
 
+  const esProfesional = ["terapeuta", "psiquiatra", "admin"].includes(perfil.rol);
+  if (esProfesional) {
+    return <PanelProfesional perfil={perfil} alSalir={refrescarPerfil} />;
+  }
+
   return <AppPaciente perfil={perfil} alSalir={refrescarPerfil} />;
 }
 
@@ -165,6 +172,19 @@ function PantallaAcceso({ alIngresar }) {
     }
   }
 
+  async function entrarDemo(rol) {
+    setError("");
+    setEnviando(true);
+    try {
+      await entrarDemoComo(rol);
+      await alIngresar();
+    } catch (err) {
+      setError(err.message || "No pudimos entrar en modo demo.");
+    } finally {
+      setEnviando(false);
+    }
+  }
+
   return (
     <div className="acceso">
       <div className="marca">
@@ -174,8 +194,16 @@ function PantallaAcceso({ alIngresar }) {
       </div>
 
       {!estaConfigurado && (
-        <div className="banner-demo" style={{ borderRadius: 12, marginBottom: 16 }}>
-          Modo demo · los datos se guardan solo en este navegador
+        <div className="tarjeta" style={{ marginBottom: 16 }}>
+          <div className="banner-demo" style={{ borderRadius: 12, marginBottom: 14 }}>
+            Modo demo · los datos se guardan solo en este navegador
+          </div>
+          <button className="btn" style={{ marginBottom: 10 }} onClick={() => entrarDemo("paciente")}>
+            Entrar como paciente (demo)
+          </button>
+          <button className="btn secundario" onClick={() => entrarDemo("profesional")}>
+            Entrar como profesional (demo)
+          </button>
         </div>
       )}
 

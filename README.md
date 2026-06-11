@@ -34,8 +34,13 @@ cualquier dato y explora las secciones.
 | `src/lib/demoStore.js` | Almacén local de demostración (localStorage). |
 | `supabase/01_esquema.sql` | Crea todas las tablas, roles y políticas de seguridad (RLS). |
 
-Secciones de la app: **Inicio**, **Ánimo**, **Sueño** (con alerta de descanso), **Agenda**
+Secciones del paciente: **Inicio**, **Ánimo**, **Sueño** (con alerta de descanso), **Agenda**
 (citas), **Tareas**, **Recursos** y **Apoyo**.
+
+**Panel del profesional (Fase 2):** quien tenga rol `terapeuta`, `psiquiatra` o `admin` ve, al
+entrar, la lista de sus pacientes y, por cada uno: ánimo y sueño recientes, alertas de
+descanso, tareas (puede asignar nuevas) y notas de coordinación (puede escribirlas y
+decidir si el paciente las ve). En modo demo, usa el botón **"Entrar como profesional"**.
 
 ---
 
@@ -47,8 +52,10 @@ Secciones de la app: **Inicio**, **Ánimo**, **Sueño** (con alerta de descanso)
 
 ### 2. Crear la base de datos
 1. En Supabase, abre el **SQL Editor**.
-2. Pega el contenido de `supabase/01_esquema.sql` y ejecútalo.
-3. Verifica en **Table Editor** que aparezcan las tablas (`perfiles`, `registros_animo`,
+2. Pega y ejecuta **`supabase/01_esquema.sql`** (tablas, roles y políticas RLS).
+3. Pega y ejecuta **`supabase/02_funciones.sql`** (trigger que crea el perfil al
+   registrarse, políticas de las alertas de sueño y la vista de pacientes).
+4. Verifica en **Table Editor** que aparezcan las tablas (`perfiles`, `registros_animo`,
    `registros_sueno`, `citas`, etc.).
 
 ### 3. Conectar las credenciales (sin exponerlas)
@@ -111,8 +118,38 @@ Esto no es opcional cuando se manejan datos de salud:
 
 ---
 
+---
+
+## App para iPhone (iOS)
+
+Hay dos caminos. El primero funciona **hoy, sin Mac ni cuenta de desarrollador**.
+
+### Opción A — PWA (la más rápida)
+La app ya es instalable como PWA. En el iPhone:
+1. Publica la beta (Vercel/Netlify) y abre el enlace en **Safari**.
+2. Toca **Compartir → "Añadir a pantalla de inicio"**.
+3. Queda con su icono, a pantalla completa, como una app.
+
+### Opción B — App nativa con Capacitor (para App Store / TestFlight)
+El proyecto ya incluye la plataforma iOS en `ios/` (Capacitor 8, sin CocoaPods).
+**Requiere una Mac con Xcode y una cuenta de Apple Developer** para firmar y publicar.
+
+```bash
+npm run ios:build   # compila la web y la sincroniza con el proyecto iOS
+npm run ios:open    # abre el proyecto en Xcode
+```
+
+En Xcode: selecciona tu *Team* de firma, elige un simulador o tu iPhone y pulsa **Run**.
+Para distribuir: **Product → Archive → Distribute App** (TestFlight o App Store).
+
+> El `appId` es `do.menteserena.app` (editable en `capacitor.config.json`). Cada vez que
+> cambies el código web, ejecuta `npm run ios:build` para reflejarlo en la app.
+
+---
+
 ## Fases
 
-- **Fase 1 (este repo):** cuentas, roles, persistencia de las secciones e interfaz del paciente.
-- **Fase 2:** panel del profesional y beta con pacientes.
-- **Fases siguientes:** conexión del reloj (solo sueño) y suscripciones.
+- **Fase 1:** cuentas, roles, persistencia de las secciones e interfaz del paciente. ✅
+- **Fase 2 (este repo):** panel del profesional (pacientes, ánimo/sueño, tareas, notas) y
+  empaquetado iOS con Capacitor. ✅
+- **Fases siguientes:** conexión del reloj (solo sueño), notificaciones y suscripciones.

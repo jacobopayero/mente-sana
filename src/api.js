@@ -226,7 +226,7 @@ export async function listarNotas(pacienteId) {
 }
 
 export async function crearNota({ paciente_id, categoria, texto, visible_paciente = false }) {
-  if (!estaConfigurado) throw new Error("Crear notas requiere Supabase configurado.");
+  if (!estaConfigurado) return demo.crearNota({ paciente_id, categoria, texto, visible_paciente });
   const user = await usuarioActual();
   const { data, error } = await supabase
     .from("notas_coordinacion")
@@ -251,7 +251,7 @@ export async function listarRecursos() {
 }
 
 export async function crearRecurso(recurso) {
-  if (!estaConfigurado) throw new Error("Crear recursos requiere Supabase configurado.");
+  if (!estaConfigurado) return demo.crearRecurso(recurso);
   const user = await usuarioActual();
   const { data, error } = await supabase
     .from("recursos")
@@ -260,4 +260,99 @@ export async function crearRecurso(recurso) {
     .single();
   if (error) throw error;
   return data;
+}
+
+// ----------------------------------------------------------------------------
+//  PANEL DEL PROFESIONAL (Fase 2)
+//  Lectura de los datos de los pacientes a cargo y escritura de tareas, notas
+//  y recursos. En Supabase, las políticas RLS (atiende_a) garantizan que un
+//  profesional solo ve a sus pacientes.
+// ----------------------------------------------------------------------------
+
+// Solo demo: permite entrar como paciente o como profesional para revisar.
+export async function entrarDemoComo(rol) {
+  return demo.iniciarSesionComo(rol);
+}
+
+export async function misPacientes() {
+  if (!estaConfigurado) return demo.misPacientes();
+  const { data, error } = await supabase
+    .from("vinculos_cuidado")
+    .select(`paciente:paciente_id ( id, nombre, email )`)
+    .eq("activo", true);
+  if (error) throw error;
+  return (data || []).map((v) => v.paciente);
+}
+
+export async function animoDePaciente(pacienteId) {
+  if (!estaConfigurado) return demo.animoDePaciente(pacienteId);
+  const { data, error } = await supabase
+    .from("registros_animo")
+    .select("*")
+    .eq("paciente_id", pacienteId)
+    .order("fecha", { ascending: true });
+  if (error) throw error;
+  return data;
+}
+
+export async function suenoDePaciente(pacienteId) {
+  if (!estaConfigurado) return demo.suenoDePaciente(pacienteId);
+  const { data, error } = await supabase
+    .from("registros_sueno")
+    .select("*")
+    .eq("paciente_id", pacienteId)
+    .order("fecha", { ascending: true });
+  if (error) throw error;
+  return data;
+}
+
+export async function alertasDePaciente(pacienteId) {
+  if (!estaConfigurado) return demo.alertasDePaciente(pacienteId);
+  const { data, error } = await supabase
+    .from("alertas_sueno")
+    .select("*")
+    .eq("paciente_id", pacienteId)
+    .order("creado_en", { ascending: false });
+  if (error) throw error;
+  return data;
+}
+
+export async function tareasDePaciente(pacienteId) {
+  if (!estaConfigurado) return demo.tareasDePaciente(pacienteId);
+  const { data, error } = await supabase
+    .from("tareas")
+    .select("*")
+    .eq("paciente_id", pacienteId)
+    .order("creado_en", { ascending: true });
+  if (error) throw error;
+  return data;
+}
+
+export async function crearTarea({ paciente_id, texto }) {
+  if (!estaConfigurado) return demo.crearTarea({ paciente_id, texto });
+  const user = await usuarioActual();
+  const { data, error } = await supabase
+    .from("tareas")
+    .insert({ paciente_id, asignada_por: user.id, texto })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function citasDePaciente(pacienteId) {
+  if (!estaConfigurado) return demo.citasDePaciente(pacienteId);
+  const { data, error } = await supabase
+    .from("citas")
+    .select("*")
+    .eq("paciente_id", pacienteId)
+    .order("fecha", { ascending: true });
+  if (error) throw error;
+  return data;
+}
+
+// Vista del profesional: todas las notas del paciente (RLS controla el acceso).
+export async function notasDePaciente(pacienteId) {
+  if (!estaConfigurado) return demo.notasDePaciente(pacienteId);
+  return listarNotas(pacienteId);
 }

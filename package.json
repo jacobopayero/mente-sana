@@ -7,15 +7,24 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sync": "cap sync",
+    "ios:build": "vite build && cap sync ios",
+    "ios:open": "cap open ios"
   },
   "dependencies": {
+    "@capacitor/app": "^8.1.0",
+    "@capacitor/core": "^8.4.0",
+    "@capacitor/keyboard": "^8.0.3",
+    "@capacitor/status-bar": "^8.0.2",
     "@supabase/supabase-js": "^2.45.0",
     "lucide-react": "^0.408.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.4.0",
+    "@capacitor/ios": "^8.4.0",
     "@vitejs/plugin-react": "^4.3.1",
     "vite": "^5.3.4"
   }

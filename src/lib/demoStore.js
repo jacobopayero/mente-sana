@@ -101,12 +101,23 @@ export const demo = {
   async registrarse({ email, nombre }) {
     return actualizar((db) => {
       db.perfil = { ...db.perfil, email, nombre };
-      db.sesion = { user: { id: db.perfil.id, email } };
+      db.sesion = { user: { id: db.perfil.id, email }, rol: "paciente" };
     }).sesion;
   },
   async iniciarSesion({ email }) {
     return actualizar((db) => {
-      db.sesion = { user: { id: db.perfil.id, email: email || db.perfil.email } };
+      db.sesion = { user: { id: db.perfil.id, email: email || db.perfil.email }, rol: "paciente" };
+    }).sesion;
+  },
+  // Solo demo: entrar como 'paciente' o como 'profesional'.
+  async iniciarSesionComo(rol) {
+    return actualizar((db) => {
+      if (rol === "profesional") {
+        const pro = db.equipo[0];
+        db.sesion = { user: { id: pro.id, email: "profesional@demo" }, rol: "profesional" };
+      } else {
+        db.sesion = { user: { id: db.perfil.id, email: db.perfil.email }, rol: "paciente" };
+      }
     }).sesion;
   },
   async cerrarSesion() {
@@ -119,7 +130,19 @@ export const demo = {
   },
   async miPerfil() {
     const db = leer();
-    return db.sesion ? db.perfil : null;
+    if (!db.sesion) return null;
+    if (db.sesion.rol === "profesional") {
+      const pro = db.equipo[0];
+      return {
+        id: pro.id,
+        nombre: pro.nombre,
+        nombre_formal: pro.nombre_formal,
+        titulo: pro.titulo,
+        rol: pro.rol, // 'terapeuta'
+        email: "profesional@demo",
+      };
+    }
+    return db.perfil;
   },
   async miEquipo() {
     return leer().equipo;
@@ -218,5 +241,81 @@ export const demo = {
   // Recursos
   async listarRecursos() {
     return [...leer().recursos].sort((a, b) => (b.creado_en || "").localeCompare(a.creado_en || ""));
+  },
+  async crearRecurso(recurso) {
+    let guardado;
+    actualizar((db) => {
+      guardado = { id: id(), creado_por: db.equipo[0]?.id, creado_en: hoy(), ...recurso };
+      db.recursos.push(guardado);
+    });
+    return guardado;
+  },
+
+  // ---- Panel del profesional ----------------------------------------------
+  async misPacientes() {
+    const db = leer();
+    return [{ id: db.perfil.id, nombre: db.perfil.nombre, email: db.perfil.email }];
+  },
+  async animoDePaciente(pid) {
+    return leer()
+      .registros_animo.filter((r) => r.paciente_id === pid)
+      .sort((a, b) => a.fecha.localeCompare(b.fecha));
+  },
+  async suenoDePaciente(pid) {
+    return leer()
+      .registros_sueno.filter((r) => r.paciente_id === pid)
+      .sort((a, b) => a.fecha.localeCompare(b.fecha));
+  },
+  async alertasDePaciente(pid) {
+    return leer()
+      .alertas_sueno.filter((r) => r.paciente_id === pid)
+      .sort((a, b) => (b.creado_en || "").localeCompare(a.creado_en || ""));
+  },
+  async tareasDePaciente(pid) {
+    return leer()
+      .tareas.filter((r) => r.paciente_id === pid)
+      .sort((a, b) => (a.creado_en || "").localeCompare(b.creado_en || ""));
+  },
+  async crearTarea({ paciente_id, texto }) {
+    let guardado;
+    actualizar((db) => {
+      guardado = {
+        id: id(),
+        paciente_id,
+        asignada_por: db.equipo[0]?.id,
+        texto,
+        completada: false,
+        creado_en: hoy(),
+      };
+      db.tareas.push(guardado);
+    });
+    return guardado;
+  },
+  async citasDePaciente(pid) {
+    return leer()
+      .citas.filter((r) => r.paciente_id === pid)
+      .sort((a, b) => a.fecha.localeCompare(b.fecha));
+  },
+  // Vista del profesional: todas las notas del paciente (incluidas las internas)
+  async notasDePaciente(pid) {
+    return leer()
+      .notas_coordinacion.filter((n) => n.paciente_id === pid)
+      .sort((a, b) => (b.creado_en || "").localeCompare(a.creado_en || ""));
+  },
+  async crearNota({ paciente_id, categoria, texto, visible_paciente = false }) {
+    let guardado;
+    actualizar((db) => {
+      guardado = {
+        id: id(),
+        paciente_id,
+        autor_id: db.equipo[0]?.id,
+        categoria,
+        texto,
+        visible_paciente,
+        creado_en: hoy(),
+      };
+      db.notas_coordinacion.push(guardado);
+    });
+    return guardado;
   },
 };
