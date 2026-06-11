@@ -51,6 +51,10 @@ decidir si el paciente las ve). En modo demo, usa el botón **"Entrar como profe
   En la app nativa de iOS puede sumarse Face ID.
 - **Medicación con recordatorios** y **citas/tareas al calendario**: generan un evento `.ics`
   con alarma que el Calendario/Recordatorios del iPhone dispara aunque la app esté cerrada.
+- **Caja de herramientas**: respiración guiada 4·7·8 animada, anclaje 5-4-3-2-1 y una pausa
+  de autocompasión. Sin conexión.
+- **Diario** (journaling): escritura privada del paciente con sugerencias rotativas.
+- **Frase del día** en el inicio.
 
 ---
 

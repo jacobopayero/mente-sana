@@ -61,6 +61,9 @@ function semilla() {
       { id: id(), paciente_id: paciente.id, autor_id: terapeuta.id, categoria: "Evolucion", texto: "Buen avance esta semana. Sigamos con calma.", visible_paciente: true, creado_en: diasAtras(2) },
     ],
     plan_seguridad: { paciente_id: paciente.id, senales: "", calma: "", personas: "", motivos: "" },
+    diario: [
+      { id: id(), paciente_id: paciente.id, sugerencia: "¿Qué necesité hoy?", texto: "Necesité ir más despacio y pedir ayuda. Lo hice.", creado_en: diasAtras(3) },
+    ],
     medicamentos: [
       { id: id(), paciente_id: paciente.id, nombre: "Sertralina", dosis: "1 tableta", horario: "08:00", nota: "Con el desayuno", activo: true, creado_en: diasAtras(10) },
     ],
@@ -362,5 +365,19 @@ export const demo = {
     actualizar((db) => {
       db.medicamentos = db.medicamentos.filter((m) => m.id !== medId);
     });
+  },
+
+  // ---- Diario ---------------------------------------------------------------
+  async listarDiario() {
+    return [...(leer().diario || [])].sort((a, b) => (b.creado_en || "").localeCompare(a.creado_en || ""));
+  },
+  async crearEntradaDiario({ sugerencia, texto }) {
+    let guardado;
+    actualizar((db) => {
+      if (!db.diario) db.diario = [];
+      guardado = { id: id(), paciente_id: db.perfil.id, sugerencia, texto, creado_en: new Date().toISOString() };
+      db.diario.push(guardado);
+    });
+    return guardado;
   },
 };

@@ -39,9 +39,11 @@ import {
   SOSBoton,
   BotonCalendario,
 } from "./Bienestar.jsx";
-import { Pill, ShieldCheck, Settings } from "lucide-react";
+import { VistaHerramientas } from "./Herramientas.jsx";
+import { VistaDiario } from "./Diario.jsx";
+import { Pill, ShieldCheck, Settings, BookHeart } from "lucide-react";
 import { pinActivo } from "./lib/pin";
-import { recordarCita } from "./lib/calendario";
+import { recordarCita, recordarTarea } from "./lib/calendario";
 import {
   estaConfigurado,
   registrarse,
@@ -107,6 +109,22 @@ const LINEA_APOYO = {
   nombre: "Línea de apoyo en salud mental",
   telefono: "*462", // marcador de posición — verificar para RD
   nota: "Número de ejemplo. Debe sustituirse por la línea verificada de apoyo en TCA.",
+};
+
+const FRASES = [
+  "Sanar no es lineal. Cada intento cuenta.",
+  "No tienes que poder con todo hoy.",
+  "Tu valor no depende de un día difícil.",
+  "Pedir ayuda también es ser valiente.",
+  "Estás haciendo más de lo que crees.",
+  "Un paso pequeño sigue siendo avanzar.",
+  "Mereces la misma amabilidad que das.",
+  "Hoy basta con cuidarte un poco.",
+];
+const fraseDelDia = () => {
+  const inicioAno = new Date(new Date().getFullYear(), 0, 0);
+  const dia = Math.floor((Date.now() - inicioAno) / 86400000);
+  return FRASES[dia % FRASES.length];
 };
 
 const hoy = () => new Date().toISOString().slice(0, 10);
@@ -307,6 +325,8 @@ function AppPaciente({ perfil, alSalir }) {
         {vista === "medicacion" && <VistaMedicacion irA={setVista} />}
         {vista === "plan" && <VistaPlanSeguridad irA={setVista} />}
         {vista === "ajustes" && <VistaAjustes irA={setVista} />}
+        {vista === "herramientas" && <VistaHerramientas irA={setVista} />}
+        {vista === "diario" && <VistaDiario irA={setVista} />}
       </div>
 
       {vista !== "apoyo" && <SOSBoton onClick={() => setVista("apoyo")} />}
@@ -369,6 +389,13 @@ function VistaInicio({ perfil, irA, salir }) {
         </div>
       </header>
 
+      <div className="tarjeta" style={{ background: "var(--salvia)", color: "#fff" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, opacity: 0.9, fontSize: "0.78rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          <Sparkles size={14} /> Frase del día
+        </div>
+        <p style={{ margin: "8px 0 0", fontSize: "1.05rem", fontWeight: 500 }}>{fraseDelDia()}</p>
+      </div>
+
       <div className="tarjeta">
         <h2>¿Cómo te encuentras hoy?</h2>
         <p className="sub">Un registro breve, a tu ritmo. Sin juicios.</p>
@@ -386,6 +413,12 @@ function VistaInicio({ perfil, irA, salir }) {
         <ShieldCheck size={15} /> Tu cuidado
       </div>
       <div className="tarjeta">
+        <button className="btn fantasma" style={{ marginBottom: 10 }} onClick={() => irA("herramientas")}>
+          <Wind size={18} /> Caja de herramientas
+        </button>
+        <button className="btn fantasma" style={{ marginBottom: 10 }} onClick={() => irA("diario")}>
+          <BookHeart size={18} /> Mi diario
+        </button>
         <button className="btn fantasma" style={{ marginBottom: 10 }} onClick={() => irA("medicacion")}>
           <Pill size={18} /> Medicación y recordatorios
         </button>
@@ -887,19 +920,19 @@ function VistaTareas() {
           <p className="vacio">Tu equipo aún no te ha asignado tareas.</p>
         ) : (
           tareas.map((t) => (
-            <button
-              key={t.id}
-              className="item"
-              style={{ width: "100%", textAlign: "left" }}
-              onClick={() => alternar(t)}
-            >
-              <div className={"check" + (t.completada ? " on" : "")}>
+            <div className="item" key={t.id}>
+              <button
+                className={"check" + (t.completada ? " on" : "")}
+                onClick={() => alternar(t)}
+                title={t.completada ? "Marcar como pendiente" : "Marcar como hecha"}
+              >
                 {t.completada && <CheckSquare size={16} />}
-              </div>
+              </button>
               <div className="cuerpo">
                 <div className={"tarea-texto" + (t.completada ? " hecha" : "")}>{t.texto}</div>
+                {!t.completada && <BotonCalendario texto="Recordarme" onClick={() => recordarTarea(t)} />}
               </div>
-            </button>
+            </div>
           ))
         )}
       </div>
@@ -1012,8 +1045,11 @@ function VistaApoyo({ irA }) {
         {LINEA_APOYO.nota}
       </p>
 
-      <button className="btn" style={{ marginBottom: 14 }} onClick={() => irA("plan")}>
+      <button className="btn" style={{ marginBottom: 10 }} onClick={() => irA("plan")}>
         <ShieldCheck size={18} /> Abrir mi plan de seguridad
+      </button>
+      <button className="btn secundario" style={{ marginBottom: 14 }} onClick={() => irA("herramientas")}>
+        <Wind size={18} /> Caja de herramientas
       </button>
 
       <div className="seccion-titulo">

@@ -415,3 +415,28 @@ export async function eliminarMedicamento(id) {
   const { error } = await supabase.from("medicamentos").delete().eq("id", id);
   if (error) throw error;
 }
+
+// ----------------------------------------------------------------------------
+//  DIARIO (journaling)  ·  espacio privado del paciente
+// ----------------------------------------------------------------------------
+export async function listarDiario() {
+  if (!estaConfigurado) return demo.listarDiario();
+  const { data, error } = await supabase
+    .from("diario")
+    .select("*")
+    .order("creado_en", { ascending: false });
+  if (error) throw error;
+  return data;
+}
+
+export async function crearEntradaDiario({ sugerencia, texto }) {
+  if (!estaConfigurado) return demo.crearEntradaDiario({ sugerencia, texto });
+  const user = await usuarioActual();
+  const { data, error } = await supabase
+    .from("diario")
+    .insert({ paciente_id: user.id, sugerencia, texto })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
