@@ -20,7 +20,7 @@ const id = () =>
 
 // ---- Datos de ejemplo (semilla) -------------------------------------------
 function semilla() {
-  const paciente = { id: "demo-paciente", email: "paciente@demo", nombre: "Tú", rol: "paciente" };
+  const paciente = { id: "demo-paciente", email: "paciente@demo", nombre: "Tú", rol: "paciente", foto_url: "" };
   const terapeuta = {
     id: "demo-terapeuta",
     nombre: "Alexandra García",
@@ -61,6 +61,17 @@ function semilla() {
       { id: id(), paciente_id: paciente.id, autor_id: terapeuta.id, categoria: "Evolucion", texto: "Buen avance esta semana. Sigamos con calma.", visible_paciente: true, creado_en: diasAtras(2) },
     ],
     plan_seguridad: { paciente_id: paciente.id, senales: "", calma: "", personas: "", motivos: "" },
+    ficha_clinica: {
+      paciente_id: paciente.id,
+      fecha_nacimiento: "",
+      genero: "",
+      contacto_emergencia: "",
+      contacto_emergencia_tel: "",
+      alergias: "",
+      condiciones: "",
+      tratamientos_previos: "",
+      notas: "",
+    },
     diario: [
       { id: id(), paciente_id: paciente.id, sugerencia: "¿Qué necesité hoy?", texto: "Necesité ir más despacio y pedir ayuda. Lo hice.", creado_en: diasAtras(3) },
     ],
@@ -261,7 +272,7 @@ export const demo = {
   // ---- Panel del profesional ----------------------------------------------
   async misPacientes() {
     const db = leer();
-    return [{ id: db.perfil.id, nombre: db.perfil.nombre, email: db.perfil.email }];
+    return [{ id: db.perfil.id, nombre: db.perfil.nombre, email: db.perfil.email, foto_url: db.perfil.foto_url }];
   },
   async animoDePaciente(pid) {
     return leer()
@@ -365,6 +376,31 @@ export const demo = {
     actualizar((db) => {
       db.medicamentos = db.medicamentos.filter((m) => m.id !== medId);
     });
+  },
+
+  // ---- Perfil y ficha clínica ----------------------------------------------
+  async actualizarMiPerfil(campos) {
+    let p;
+    actualizar((db) => {
+      db.perfil = { ...db.perfil, ...campos };
+      p = db.perfil;
+    });
+    return p;
+  },
+  async getFichaClinica() {
+    return leer().ficha_clinica || {};
+  },
+  async guardarFichaClinica(campos) {
+    let f;
+    actualizar((db) => {
+      db.ficha_clinica = { ...(db.ficha_clinica || {}), paciente_id: db.perfil.id, ...campos };
+      f = db.ficha_clinica;
+    });
+    return f;
+  },
+  async fichaDePaciente() {
+    // En demo solo hay un paciente.
+    return leer().ficha_clinica || {};
   },
 
   // ---- Diario ---------------------------------------------------------------

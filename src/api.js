@@ -69,6 +69,59 @@ export async function miPerfil() {
   return data;
 }
 
+// Actualiza el perfil del usuario actual (nombre, foto, etc.).
+export async function actualizarMiPerfil(campos) {
+  if (!estaConfigurado) return demo.actualizarMiPerfil(campos);
+  const user = await usuarioActual();
+  const { data, error } = await supabase
+    .from("perfiles")
+    .update(campos)
+    .eq("id", user.id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// ----------------------------------------------------------------------------
+//  FICHA CLÍNICA (historia médica)  ·  sin métricas corporales
+// ----------------------------------------------------------------------------
+export async function getFichaClinica() {
+  if (!estaConfigurado) return demo.getFichaClinica();
+  const user = await usuarioActual();
+  const { data, error } = await supabase
+    .from("ficha_clinica")
+    .select("*")
+    .eq("paciente_id", user.id)
+    .maybeSingle();
+  if (error) throw error;
+  return data || {};
+}
+
+export async function guardarFichaClinica(campos) {
+  if (!estaConfigurado) return demo.guardarFichaClinica(campos);
+  const user = await usuarioActual();
+  const { data, error } = await supabase
+    .from("ficha_clinica")
+    .upsert({ paciente_id: user.id, ...campos, actualizado_en: new Date().toISOString() })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// Vista del profesional: ficha clínica de un paciente (RLS controla el acceso).
+export async function fichaDePaciente(pacienteId) {
+  if (!estaConfigurado) return demo.fichaDePaciente(pacienteId);
+  const { data, error } = await supabase
+    .from("ficha_clinica")
+    .select("*")
+    .eq("paciente_id", pacienteId)
+    .maybeSingle();
+  if (error) throw error;
+  return data || {};
+}
+
 // ----------------------------------------------------------------------------
 //  EQUIPO DE CUIDADO
 // ----------------------------------------------------------------------------
@@ -282,7 +335,7 @@ export async function misPacientes() {
   if (!estaConfigurado) return demo.misPacientes();
   const { data, error } = await supabase
     .from("vinculos_cuidado")
-    .select(`paciente:paciente_id ( id, nombre, email )`)
+    .select(`paciente:paciente_id ( id, nombre, email, foto_url )`)
     .eq("activo", true);
   if (error) throw error;
   return (data || []).map((v) => v.paciente);

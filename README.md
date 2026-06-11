@@ -59,6 +59,10 @@ decidir si el paciente las ve). En modo demo, usa el botón **"Entrar como profe
 - **Recordatorio diario de "registrar mi ánimo"** (evento recurrente de calendario).
 - **Tendencias** en el panel del profesional: mini-gráficas cualitativas de ánimo y
   calidad del descanso de las últimas dos semanas.
+- **Mi perfil**: el paciente edita su nombre, **sube una foto** y completa su **ficha
+  clínica** (historia médica) — fecha de nacimiento, contacto de emergencia, alergias,
+  condiciones relevantes, tratamientos previos y notas. **Sin** peso, IMC ni medidas
+  corporales. La foto y la ficha también se ven en el panel del profesional.
 
 ---
 

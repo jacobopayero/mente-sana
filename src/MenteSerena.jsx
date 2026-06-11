@@ -42,7 +42,8 @@ import {
 import { VistaHerramientas } from "./Herramientas.jsx";
 import { VistaDiario } from "./Diario.jsx";
 import Bienvenida, { onboardingAceptado } from "./Bienvenida.jsx";
-import { Pill, ShieldCheck, Settings, BookHeart, Bell } from "lucide-react";
+import { VistaPerfil } from "./Perfil.jsx";
+import { Pill, ShieldCheck, Settings, BookHeart, Bell, User } from "lucide-react";
 import { pinActivo } from "./lib/pin";
 import { recordarCita, recordarTarea, recordarRegistroAnimo } from "./lib/calendario";
 import {
@@ -333,6 +334,7 @@ function AppPaciente({ perfil, alSalir }) {
         {vista === "ajustes" && <VistaAjustes irA={setVista} />}
         {vista === "herramientas" && <VistaHerramientas irA={setVista} />}
         {vista === "diario" && <VistaDiario irA={setVista} />}
+        {vista === "perfil" && <VistaPerfil irA={setVista} alActualizar={alSalir} />}
       </div>
 
       {vista !== "apoyo" && <SOSBoton onClick={() => setVista("apoyo")} />}
@@ -380,10 +382,19 @@ function VistaInicio({ perfil, irA, salir }) {
     <>
       <header className="encabezado">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-          <div>
-            <p className="saludo">{saludo},</p>
-            <h1>{perfil.nombre || "hola"}</h1>
-          </div>
+          <button onClick={() => irA("perfil")} style={{ display: "flex", alignItems: "center", gap: 10, textAlign: "left" }}>
+            {perfil.foto_url ? (
+              <img src={perfil.foto_url} alt="" style={{ width: 48, height: 48, borderRadius: "50%", objectFit: "cover" }} />
+            ) : (
+              <div className="avatar" style={{ width: 48, height: 48 }}>
+                {(perfil.nombre || "?").split(" ").map((s) => s[0]).slice(0, 2).join("")}
+              </div>
+            )}
+            <div>
+              <p className="saludo">{saludo},</p>
+              <h1 style={{ margin: "2px 0 0" }}>{perfil.nombre || "hola"}</h1>
+            </div>
+          </button>
           <div style={{ display: "flex", gap: 4 }}>
             <button style={{ padding: 8 }} onClick={() => irA("ajustes")} title="Ajustes">
               <Settings size={20} color="var(--tinta-suave)" />
@@ -419,6 +430,9 @@ function VistaInicio({ perfil, irA, salir }) {
         <ShieldCheck size={15} /> Tu cuidado
       </div>
       <div className="tarjeta">
+        <button className="btn fantasma" style={{ marginBottom: 10 }} onClick={() => irA("perfil")}>
+          <User size={18} /> Mi perfil y ficha clínica
+        </button>
         <button className="btn fantasma" style={{ marginBottom: 10 }} onClick={() => irA("herramientas")}>
           <Wind size={18} /> Caja de herramientas
         </button>

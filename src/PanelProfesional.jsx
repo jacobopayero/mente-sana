@@ -25,6 +25,7 @@ import {
   Wind,
   Video,
   MapPin,
+  FileText,
 } from "lucide-react";
 
 import {
@@ -38,6 +39,7 @@ import {
   notasDePaciente,
   crearNota,
   citasDePaciente,
+  fichaDePaciente,
 } from "./api";
 
 const CARAS = ["", "😣", "😕", "😐", "🙂", "😄"];
@@ -149,9 +151,13 @@ function ListaPacientes({ perfil, salir, onAbrir }) {
                 style={{ width: "100%", textAlign: "left" }}
                 onClick={() => onAbrir(p)}
               >
-                <div className="avatar" style={{ width: 44, height: 44 }}>
-                  {iniciales}
-                </div>
+                {p.foto_url ? (
+                  <img src={p.foto_url} alt="" style={{ width: 44, height: 44, borderRadius: 14, objectFit: "cover", flexShrink: 0 }} />
+                ) : (
+                  <div className="avatar" style={{ width: 44, height: 44 }}>
+                    {iniciales}
+                  </div>
+                )}
                 <div className="cuerpo">
                   <div className="titulo">{p.nombre}</div>
                   <div className="meta">{p.email}</div>
@@ -174,15 +180,17 @@ function DetallePaciente({ paciente, onVolver }) {
   const [tareas, setTareas] = useState([]);
   const [notas, setNotas] = useState([]);
   const [citas, setCitas] = useState([]);
+  const [ficha, setFicha] = useState({});
 
   const cargar = useCallback(async () => {
-    const [a, s, al, t, n, c] = await Promise.all([
+    const [a, s, al, t, n, c, f] = await Promise.all([
       animoDePaciente(paciente.id),
       suenoDePaciente(paciente.id),
       alertasDePaciente(paciente.id),
       tareasDePaciente(paciente.id),
       notasDePaciente(paciente.id),
       citasDePaciente(paciente.id),
+      fichaDePaciente(paciente.id),
     ]);
     setAnimo(a);
     setSueno(s);
@@ -190,6 +198,7 @@ function DetallePaciente({ paciente, onVolver }) {
     setTareas(t);
     setNotas(n);
     setCitas(c);
+    setFicha(f || {});
   }, [paciente.id]);
 
   useEffect(() => {
@@ -215,8 +224,19 @@ function DetallePaciente({ paciente, onVolver }) {
         >
           <ChevronLeft size={18} /> Pacientes
         </button>
-        <h1 style={{ marginTop: 0 }}>{paciente.nombre}</h1>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {paciente.foto_url ? (
+            <img src={paciente.foto_url} alt="" style={{ width: 54, height: 54, borderRadius: 16, objectFit: "cover" }} />
+          ) : (
+            <div className="avatar" style={{ width: 54, height: 54 }}>
+              {(paciente.nombre || "?").split(" ").map((s) => s[0]).slice(0, 2).join("")}
+            </div>
+          )}
+          <h1 style={{ margin: 0 }}>{paciente.nombre}</h1>
+        </div>
       </header>
+
+      <FichaClinica ficha={ficha} />
 
       {alertas.length > 0 && (
         <div className="aviso">
@@ -319,6 +339,39 @@ function DetallePaciente({ paciente, onVolver }) {
                   {c.modalidad} · {c.tipo}
                 </div>
               </div>
+            </div>
+          ))
+        )}
+      </div>
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+function FichaClinica({ ficha }) {
+  const campos = [
+    ["Fecha de nacimiento", ficha.fecha_nacimiento && fechaLegible(ficha.fecha_nacimiento)],
+    ["Género", ficha.genero],
+    ["Contacto de emergencia", [ficha.contacto_emergencia, ficha.contacto_emergencia_tel].filter(Boolean).join(" · ")],
+    ["Alergias", ficha.alergias],
+    ["Condiciones relevantes", ficha.condiciones],
+    ["Tratamientos previos", ficha.tratamientos_previos],
+    ["Notas del paciente", ficha.notas],
+  ].filter(([, v]) => v);
+
+  return (
+    <>
+      <div className="seccion-titulo">
+        <FileText size={15} /> Ficha clínica
+      </div>
+      <div className="tarjeta">
+        {campos.length === 0 ? (
+          <p className="vacio" style={{ padding: 8 }}>El paciente aún no ha completado su ficha.</p>
+        ) : (
+          campos.map(([etiqueta, valor]) => (
+            <div className="item" key={etiqueta} style={{ display: "block" }}>
+              <div className="meta">{etiqueta}</div>
+              <div className="titulo" style={{ fontWeight: 500, whiteSpace: "pre-wrap" }}>{valor}</div>
             </div>
           ))
         )}
