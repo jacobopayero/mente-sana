@@ -1,0 +1,222 @@
+// ============================================================================
+//  MODO DEMO — almacenamiento local (localStorage)
+//  Reproduce el comportamiento de la capa de datos sin necesidad de Supabase.
+//  Pensado SOLO para revisar la interfaz: los datos viven en este navegador.
+//
+//  Respeta las mismas salvaguardas: no hay calorías, peso ni métricas
+//  corporales; el sueño es solo calidad cualitativa y rango.
+// ============================================================================
+
+const CLAVE = "mente-serena-demo";
+const hoy = () => new Date().toISOString().slice(0, 10);
+const diasAtras = (n) => {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d.toISOString().slice(0, 10);
+};
+const id = () =>
+  (crypto.randomUUID && crypto.randomUUID()) ||
+  String(Date.now() + Math.random());
+
+// ---- Datos de ejemplo (semilla) -------------------------------------------
+function semilla() {
+  const paciente = { id: "demo-paciente", email: "paciente@demo", nombre: "Tú", rol: "paciente" };
+  const terapeuta = {
+    id: "demo-terapeuta",
+    nombre: "Alexandra García",
+    nombre_formal: "Cecilia Alexandra García H.",
+    titulo: "Lic.",
+    rol: "terapeuta",
+    perfiles_profesional: [
+      {
+        especialidad: "Familiar y de pareja · TCA",
+        credenciales: "Máster en TCA y Psicología Clínica",
+        color_hex: "#5E7560",
+      },
+    ],
+  };
+
+  return {
+    sesion: null, // se llena al iniciar sesión
+    perfil: paciente,
+    equipo: [terapeuta],
+    registros_animo: [
+      { id: id(), paciente_id: paciente.id, fecha: diasAtras(4), animo: 3, emociones: ["calma"], nota: "Día tranquilo." },
+      { id: id(), paciente_id: paciente.id, fecha: diasAtras(2), animo: 4, emociones: ["esperanza", "calma"], nota: "" },
+      { id: id(), paciente_id: paciente.id, fecha: diasAtras(1), animo: 2, emociones: ["ansiedad"], nota: "Tarde difícil, usé la respiración." },
+    ],
+    registros_sueno: [
+      { id: id(), paciente_id: paciente.id, fecha: diasAtras(2), calidad: "reparador", rango: 2, nota: "", origen: "manual" },
+      { id: id(), paciente_id: paciente.id, fecha: diasAtras(1), calidad: "regular", rango: 1, nota: "Me costó dormir.", origen: "manual" },
+    ],
+    alertas_sueno: [],
+    citas: [
+      { id: id(), paciente_id: paciente.id, profesional_id: terapeuta.id, fecha: diasAtras(-3), hora: "16:00", modalidad: "Videollamada", tipo: "Individual", estado: "agendada" },
+    ],
+    tareas: [
+      { id: id(), paciente_id: paciente.id, asignada_por: terapeuta.id, texto: "Anotar un momento amable contigo cada día.", completada: false, creado_en: diasAtras(3) },
+      { id: id(), paciente_id: paciente.id, asignada_por: terapeuta.id, texto: "Practicar la respiración 4-7-8 al despertar.", completada: true, creado_en: diasAtras(5) },
+    ],
+    notas_coordinacion: [
+      { id: id(), paciente_id: paciente.id, autor_id: terapeuta.id, categoria: "Evolucion", texto: "Buen avance esta semana. Sigamos con calma.", visible_paciente: true, creado_en: diasAtras(2) },
+    ],
+    recursos: [
+      { id: id(), tipo: "motivacion", titulo: "Un paso a la vez", descripcion: "Recordatorio para los días difíciles.", texto: "Sanar no es lineal. Cada día que lo intentas, cuenta.", creado_en: diasAtras(6) },
+      { id: id(), tipo: "instructivo", titulo: "Respiración 4-7-8", descripcion: "Una herramienta para momentos de ansiedad.", texto: "Inhala 4 segundos, sostén 7, exhala 8. Repite 4 veces.", creado_en: diasAtras(6) },
+      { id: id(), tipo: "enlace", titulo: "¿Qué es la terapia familiar?", descripcion: "Lectura breve.", url: "https://example.org", creado_en: diasAtras(7) },
+    ],
+  };
+}
+
+function leer() {
+  try {
+    const guardado = localStorage.getItem(CLAVE);
+    if (guardado) return JSON.parse(guardado);
+  } catch (_) {
+    /* ignore */
+  }
+  const inicial = semilla();
+  escribir(inicial);
+  return inicial;
+}
+
+function escribir(db) {
+  try {
+    localStorage.setItem(CLAVE, JSON.stringify(db));
+  } catch (_) {
+    /* ignore */
+  }
+}
+
+function actualizar(fn) {
+  const db = leer();
+  fn(db);
+  escribir(db);
+  return db;
+}
+
+// ---- API demo (mismas firmas que api.js) ----------------------------------
+export const demo = {
+  // Auth
+  async registrarse({ email, nombre }) {
+    return actualizar((db) => {
+      db.perfil = { ...db.perfil, email, nombre };
+      db.sesion = { user: { id: db.perfil.id, email } };
+    }).sesion;
+  },
+  async iniciarSesion({ email }) {
+    return actualizar((db) => {
+      db.sesion = { user: { id: db.perfil.id, email: email || db.perfil.email } };
+    }).sesion;
+  },
+  async cerrarSesion() {
+    actualizar((db) => {
+      db.sesion = null;
+    });
+  },
+  async usuarioActual() {
+    return leer().sesion?.user || null;
+  },
+  async miPerfil() {
+    const db = leer();
+    return db.sesion ? db.perfil : null;
+  },
+  async miEquipo() {
+    return leer().equipo;
+  },
+
+  // Ánimo
+  async listarAnimo() {
+    return [...leer().registros_animo].sort((a, b) => a.fecha.localeCompare(b.fecha));
+  },
+  async guardarAnimo({ fecha, animo, emociones, nota }) {
+    let guardado;
+    actualizar((db) => {
+      const i = db.registros_animo.findIndex((r) => r.fecha === fecha);
+      const base = { paciente_id: db.perfil.id, fecha, animo, emociones, nota };
+      if (i >= 0) {
+        db.registros_animo[i] = { ...db.registros_animo[i], ...base };
+        guardado = db.registros_animo[i];
+      } else {
+        guardado = { id: id(), ...base };
+        db.registros_animo.push(guardado);
+      }
+    });
+    return guardado;
+  },
+
+  // Sueño
+  async listarSueno() {
+    return [...leer().registros_sueno].sort((a, b) => a.fecha.localeCompare(b.fecha));
+  },
+  async guardarSueno({ fecha, calidad, rango, nota, origen = "manual" }) {
+    let guardado;
+    actualizar((db) => {
+      const i = db.registros_sueno.findIndex((r) => r.fecha === fecha);
+      const base = { paciente_id: db.perfil.id, fecha, calidad, rango, nota, origen };
+      if (i >= 0) {
+        db.registros_sueno[i] = { ...db.registros_sueno[i], ...base };
+        guardado = db.registros_sueno[i];
+      } else {
+        guardado = { id: id(), ...base };
+        db.registros_sueno.push(guardado);
+      }
+    });
+    return guardado;
+  },
+  async registrarAlertaSueno({ motivo, respuesta }) {
+    actualizar((db) => {
+      db.alertas_sueno.push({ id: id(), paciente_id: db.perfil.id, fecha: hoy(), motivo, respuesta });
+    });
+  },
+
+  // Citas
+  async listarCitas() {
+    return [...leer().citas].sort((a, b) => a.fecha.localeCompare(b.fecha));
+  },
+  async crearCita({ profesional_id, fecha, hora, modalidad, tipo }) {
+    let guardado;
+    actualizar((db) => {
+      guardado = {
+        id: id(),
+        paciente_id: db.perfil.id,
+        profesional_id: profesional_id || db.equipo[0]?.id,
+        fecha,
+        hora,
+        modalidad,
+        tipo,
+        estado: "agendada",
+      };
+      db.citas.push(guardado);
+    });
+    return guardado;
+  },
+  async cancelarCita(citaId) {
+    actualizar((db) => {
+      db.citas = db.citas.filter((c) => c.id !== citaId);
+    });
+  },
+
+  // Tareas
+  async listarTareas() {
+    return [...leer().tareas].sort((a, b) => (a.creado_en || "").localeCompare(b.creado_en || ""));
+  },
+  async marcarTarea(tareaId, completada) {
+    actualizar((db) => {
+      const t = db.tareas.find((x) => x.id === tareaId);
+      if (t) t.completada = completada;
+    });
+  },
+
+  // Notas
+  async listarNotas() {
+    return leer()
+      .notas_coordinacion.filter((n) => n.visible_paciente)
+      .sort((a, b) => (b.creado_en || "").localeCompare(a.creado_en || ""));
+  },
+
+  // Recursos
+  async listarRecursos() {
+    return [...leer().recursos].sort((a, b) => (b.creado_en || "").localeCompare(a.creado_en || ""));
+  },
+};

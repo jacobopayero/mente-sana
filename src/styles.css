@@ -1,0 +1,454 @@
+/* ===========================================================================
+   Mente Serena — estilos
+   Paleta serena, móvil primero. Calma, sin estridencias.
+   =========================================================================== */
+:root {
+  --salvia: #5e7560;
+  --salvia-osc: #44563f;
+  --salvia-clara: #a8bba2;
+  --crema: #f5f2ec;
+  --crema-osc: #ece7dd;
+  --tinta: #2e3a2c;
+  --tinta-suave: #6b7268;
+  --blanco: #ffffff;
+  --sombra: 0 6px 20px rgba(46, 58, 44, 0.08);
+  --radio: 18px;
+  --alerta: #b5774f;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--crema);
+  color: var(--tinta);
+  line-height: 1.5;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+/* ---- Estructura general --------------------------------------------------- */
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--crema);
+  position: relative;
+}
+
+.contenido {
+  flex: 1;
+  padding: 16px 16px 96px;
+}
+
+.encabezado {
+  padding: 20px 16px 8px;
+}
+.encabezado .saludo {
+  font-size: 0.85rem;
+  color: var(--tinta-suave);
+  margin: 0;
+}
+.encabezado h1 {
+  font-size: 1.5rem;
+  margin: 2px 0 0;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.banner-demo {
+  background: var(--salvia-clara);
+  color: var(--salvia-osc);
+  font-size: 0.78rem;
+  text-align: center;
+  padding: 6px 12px;
+  font-weight: 600;
+}
+
+/* ---- Tarjetas ------------------------------------------------------------- */
+.tarjeta {
+  background: var(--blanco);
+  border-radius: var(--radio);
+  padding: 18px;
+  box-shadow: var(--sombra);
+  margin-bottom: 14px;
+}
+.tarjeta h2 {
+  font-size: 1.05rem;
+  margin: 0 0 4px;
+}
+.tarjeta .sub {
+  color: var(--tinta-suave);
+  font-size: 0.85rem;
+  margin: 0 0 14px;
+}
+
+.seccion-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--tinta-suave);
+  margin: 18px 4px 10px;
+  font-weight: 700;
+}
+
+/* ---- Botones -------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--salvia);
+  color: var(--blanco);
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  width: 100%;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+.btn:active {
+  transform: scale(0.985);
+}
+.btn:hover {
+  background: var(--salvia-osc);
+}
+.btn.secundario {
+  background: var(--crema-osc);
+  color: var(--tinta);
+}
+.btn.secundario:hover {
+  background: #e0dacd;
+}
+.btn.fantasma {
+  background: transparent;
+  color: var(--salvia-osc);
+  border: 1.5px solid var(--salvia-clara);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---- Formularios ---------------------------------------------------------- */
+.campo {
+  margin-bottom: 14px;
+}
+.campo label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--tinta-suave);
+}
+.campo input,
+.campo textarea,
+.campo select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1.5px solid var(--crema-osc);
+  background: var(--crema);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.campo input:focus,
+.campo textarea:focus,
+.campo select:focus {
+  border-color: var(--salvia-clara);
+}
+.campo textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+/* ---- Ánimo: caritas ------------------------------------------------------- */
+.fila-animo {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin: 6px 0 4px;
+}
+.cara {
+  flex: 1;
+  aspect-ratio: 1;
+  border-radius: 14px;
+  background: var(--crema);
+  border: 2px solid transparent;
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s ease;
+}
+.cara.activa {
+  border-color: var(--salvia);
+  background: var(--salvia-clara);
+  transform: translateY(-2px);
+}
+
+/* ---- Chips de emociones --------------------------------------------------- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--crema);
+  border: 1.5px solid var(--crema-osc);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.chip.activa {
+  background: var(--salvia-clara);
+  border-color: var(--salvia);
+  color: var(--salvia-osc);
+}
+
+/* ---- Listas --------------------------------------------------------------- */
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--crema-osc);
+}
+.item:last-child {
+  border-bottom: none;
+}
+.item .icono-redondo {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--crema);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--salvia);
+}
+.item .cuerpo {
+  flex: 1;
+  min-width: 0;
+}
+.item .cuerpo .titulo {
+  font-weight: 600;
+}
+.item .cuerpo .meta {
+  font-size: 0.82rem;
+  color: var(--tinta-suave);
+}
+
+.vacio {
+  text-align: center;
+  color: var(--tinta-suave);
+  padding: 28px 12px;
+  font-size: 0.9rem;
+}
+
+/* ---- Casilla tarea -------------------------------------------------------- */
+.check {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border: 2px solid var(--salvia-clara);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--blanco);
+  color: var(--blanco);
+}
+.check.on {
+  background: var(--salvia);
+  border-color: var(--salvia);
+}
+.tarea-texto.hecha {
+  text-decoration: line-through;
+  color: var(--tinta-suave);
+}
+
+/* ---- Etiquetas ------------------------------------------------------------ */
+.etiqueta {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--salvia-clara);
+  color: var(--salvia-osc);
+}
+
+/* ---- Alerta de sueño / apoyo --------------------------------------------- */
+.aviso {
+  background: #f6ede4;
+  border: 1.5px solid #e7d3bf;
+  border-radius: var(--radio);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.aviso .titulo {
+  color: var(--alerta);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.aviso p {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+}
+
+.btn-apoyo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--salvia-osc);
+  color: var(--blanco);
+  padding: 16px;
+  border-radius: var(--radio);
+  font-weight: 600;
+  width: 100%;
+  margin-bottom: 12px;
+  text-decoration: none;
+}
+
+/* ---- Navegación inferior -------------------------------------------------- */
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: var(--blanco);
+  border-top: 1px solid var(--crema-osc);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+  z-index: 10;
+}
+.nav button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.65rem;
+  color: var(--tinta-suave);
+  padding: 4px 8px;
+  border-radius: 12px;
+  flex: 1;
+}
+.nav button.activo {
+  color: var(--salvia-osc);
+}
+.nav button.activo .punto {
+  opacity: 1;
+}
+.nav .punto {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--salvia);
+  opacity: 0;
+}
+
+/* ---- Pantalla de acceso --------------------------------------------------- */
+.acceso {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 32px 24px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.acceso .marca {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.acceso .marca img {
+  width: 72px;
+  height: 72px;
+  margin-bottom: 12px;
+}
+.acceso .marca h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+.acceso .marca p {
+  margin: 4px 0 0;
+  color: var(--tinta-suave);
+  font-size: 0.9rem;
+}
+.acceso .cambiar {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 0.88rem;
+  color: var(--tinta-suave);
+}
+.acceso .cambiar button {
+  color: var(--salvia-osc);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.error-texto {
+  color: #a3442f;
+  font-size: 0.85rem;
+  margin: 0 0 12px;
+}
+
+/* ---- Equipo --------------------------------------------------------------- */
+.pro {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.pro .avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blanco);
+  font-weight: 700;
+  background: var(--salvia);
+}
+
+.cargando {
+  text-align: center;
+  color: var(--tinta-suave);
+  padding: 40px;
+}
