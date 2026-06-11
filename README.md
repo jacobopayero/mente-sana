@@ -55,6 +55,10 @@ decidir si el paciente las ve). En modo demo, usa el botón **"Entrar como profe
   de autocompasión. Sin conexión.
 - **Diario** (journaling): escritura privada del paciente con sugerencias rotativas.
 - **Frase del día** en el inicio.
+- **Bienvenida** (primer ingreso): consentimiento informado y aviso de emergencia.
+- **Recordatorio diario de "registrar mi ánimo"** (evento recurrente de calendario).
+- **Tendencias** en el panel del profesional: mini-gráficas cualitativas de ánimo y
+  calidad del descanso de las últimas dos semanas.
 
 ---
 

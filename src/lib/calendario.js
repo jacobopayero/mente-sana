@@ -100,6 +100,21 @@ export function recordarMedicamento(med) {
   abrirEnCalendario(`medicamento-${med.nombre}`, ics);
 }
 
+export function recordarRegistroAnimo(hora = "20:00") {
+  const hoy = new Date();
+  const [h, m] = hora.split(":").map(Number);
+  const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), h, m, 0);
+  const ics = construirICS({
+    titulo: "Registrar mi ánimo · Mente Serena",
+    descripcion: "Un momento breve para ti, a tu ritmo.",
+    inicio,
+    durMin: 10,
+    alarmaMin: 0,
+    rrule: "FREQ=DAILY",
+  });
+  abrirEnCalendario("animo-mente-serena", ics);
+}
+
 export function recordarTarea(tarea, hora = "09:00") {
   const hoy = new Date();
   const [h, m] = hora.split(":").map(Number);

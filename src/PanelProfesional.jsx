@@ -51,6 +51,31 @@ const fechaLegible = (iso) => {
   return d.toLocaleDateString("es-DO", { weekday: "short", day: "numeric", month: "short" });
 };
 
+const CALIDAD_VAL = { inquieto: 1, regular: 2, reparador: 3 };
+
+// Mini-gráfica de barras (cualitativa, sin cifras corporales).
+function MiniGrafica({ datos, max, color = "var(--salvia)" }) {
+  if (!datos || datos.length === 0) return <p className="vacio" style={{ padding: 8 }}>Sin datos aún.</p>;
+  return (
+    <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 64 }}>
+      {datos.map((d, i) => (
+        <div
+          key={i}
+          title={d.etiqueta}
+          style={{
+            flex: 1,
+            maxWidth: 20,
+            height: `${Math.max(8, (d.valor / max) * 56)}px`,
+            background: color,
+            borderRadius: 5,
+            opacity: 0.5 + 0.5 * (d.valor / max),
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function PanelProfesional({ perfil, alSalir }) {
   const [pacienteSel, setPacienteSel] = useState(null);
 
@@ -175,6 +200,12 @@ function DetallePaciente({ paciente, onVolver }) {
   const suenoReciente = [...sueno].reverse().slice(0, 7);
   const citasProximas = citas.filter((c) => c.estado !== "cancelada");
 
+  const animoChart = animo.slice(-14).map((r) => ({ valor: r.animo, etiqueta: `${fechaLegible(r.fecha)}: ${r.animo}/5` }));
+  const suenoChart = sueno.slice(-14).map((r) => ({
+    valor: CALIDAD_VAL[r.calidad] || 1,
+    etiqueta: `${fechaLegible(r.fecha)}: ${r.calidad}`,
+  }));
+
   return (
     <>
       <header className="encabezado">
@@ -200,6 +231,19 @@ function DetallePaciente({ paciente, onVolver }) {
           ))}
         </div>
       )}
+
+      {/* Tendencias */}
+      <div className="seccion-titulo">Tendencias (últimas 2 semanas)</div>
+      <div className="tarjeta">
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.82rem", color: "var(--tinta-suave)", fontWeight: 600, marginBottom: 6 }}>
+          <HeartPulse size={14} /> Ánimo
+        </div>
+        <MiniGrafica datos={animoChart} max={5} color="var(--salvia)" />
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.82rem", color: "var(--tinta-suave)", fontWeight: 600, margin: "14px 0 6px" }}>
+          <Moon size={14} /> Calidad del descanso
+        </div>
+        <MiniGrafica datos={suenoChart} max={3} color="var(--salvia-clara)" />
+      </div>
 
       {/* Ánimo reciente */}
       <div className="seccion-titulo">

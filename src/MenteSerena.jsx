@@ -41,9 +41,10 @@ import {
 } from "./Bienestar.jsx";
 import { VistaHerramientas } from "./Herramientas.jsx";
 import { VistaDiario } from "./Diario.jsx";
-import { Pill, ShieldCheck, Settings, BookHeart } from "lucide-react";
+import Bienvenida, { onboardingAceptado } from "./Bienvenida.jsx";
+import { Pill, ShieldCheck, Settings, BookHeart, Bell } from "lucide-react";
 import { pinActivo } from "./lib/pin";
-import { recordarCita, recordarTarea } from "./lib/calendario";
+import { recordarCita, recordarTarea, recordarRegistroAnimo } from "./lib/calendario";
 import {
   estaConfigurado,
   registrarse,
@@ -141,6 +142,7 @@ export default function MenteSerena() {
   const [cargandoSesion, setCargandoSesion] = useState(true);
   const [perfil, setPerfil] = useState(null);
   const [bloqueado, setBloqueado] = useState(pinActivo());
+  const [onboarding, setOnboarding] = useState(!onboardingAceptado());
 
   const refrescarPerfil = useCallback(async () => {
     try {
@@ -160,6 +162,10 @@ export default function MenteSerena() {
 
   if (bloqueado) {
     return <PinLock alDesbloquear={() => setBloqueado(false)} />;
+  }
+
+  if (onboarding) {
+    return <Bienvenida alAceptar={() => setOnboarding(false)} />;
   }
 
   if (cargandoSesion) {
@@ -596,6 +602,10 @@ function VistaAnimo() {
           {guardado ? "Guardado 🌿" : "Guardar registro"}
         </button>
       </div>
+
+      <button className="btn fantasma" style={{ marginBottom: 14 }} onClick={() => recordarRegistroAnimo()}>
+        <Bell size={16} /> Recordarme cada día
+      </button>
 
       <div className="seccion-titulo">Tus días recientes</div>
       <div className="tarjeta">
