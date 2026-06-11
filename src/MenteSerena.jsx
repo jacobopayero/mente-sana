@@ -188,7 +188,7 @@ function PantallaAcceso({ alIngresar }) {
   return (
     <div className="acceso">
       <div className="marca">
-        <img src="/icono.svg" alt="" />
+        <img src={import.meta.env.BASE_URL + "icono.svg"} alt="" />
         <h1>Mente Serena</h1>
         <p>Acompañamiento sereno para tu proceso.</p>
       </div>
