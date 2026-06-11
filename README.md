@@ -76,17 +76,29 @@ decidir si el paciente las ve). En modo demo, usa el botón **"Entrar como profe
 4. Verifica en **Table Editor** que aparezcan las tablas (`perfiles`, `registros_animo`,
    `registros_sueno`, `citas`, etc.).
 
-### 3. Conectar las credenciales (sin exponerlas)
-Crea un archivo `.env` en la raíz (copia `.env.example`):
+### 3. Ajustes de Supabase para la beta
+En el panel de Supabase:
+- **Authentication → Sign In / Providers → Email**: desactiva **"Confirm email"** para que
+  las cuentas de prueba entren al instante (si lo dejas activo, hay que confirmar por correo).
+- **Authentication → URL Configuration → Site URL**: pon la URL pública
+  (`https://jacobopayero.github.io/mente-sana/`).
+
+### 4. Conectar las credenciales (sin exponerlas)
+Para desarrollo local, crea un archivo `.env` (copia `.env.example`):
 
 ```
 VITE_SUPABASE_URL=la-url-de-tu-proyecto
 VITE_SUPABASE_ANON_KEY=tu-clave-anonima
 ```
 
-> Nunca subas el archivo `.env` al repositorio. Ya está en `.gitignore`.
+> Nunca subas el archivo `.env`. Ya está en `.gitignore`. Al reiniciar `npm run dev`, la app
+> deja el modo demo y usa Supabase.
 
-Al reiniciar `npm run dev`, la app deja el modo demo y usa Supabase automáticamente.
+Para la **app publicada** (GitHub Pages), define dos **Variables del repositorio** en
+**Settings → Secrets and variables → Actions → Variables**:
+`VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`. El workflow las inyecta al compilar.
+(La *anon key* está diseñada para vivir en el cliente; la seguridad real la dan las
+políticas RLS de la base.)
 
 ### 4. Publicar la beta
 - Sube el proyecto a Vercel o Netlify (ambos conectan con tu repositorio).

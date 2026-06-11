@@ -20,16 +20,20 @@ export { estaConfigurado };
 // ----------------------------------------------------------------------------
 export async function registrarse({ email, password, nombre }) {
   if (!estaConfigurado) return demo.registrarse({ email, nombre });
-  const { data, error } = await supabase.auth.signUp({ email, password });
+  // Pasamos el nombre como metadato: el trigger de la base (02_funciones.sql)
+  // lo usa para crear el perfil automáticamente al registrarse.
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { nombre } },
+  });
   if (error) throw error;
-  // El perfil se crea con un trigger en la base o aquí tras el registro:
-  if (data.user) {
-    await supabase.from("perfiles").insert({
-      id: data.user.id,
-      email,
-      nombre,
-      rol: "paciente",
-    });
+  // Aseguramos/actualizamos el perfil (upsert evita conflicto con el trigger).
+  // Solo funciona si hay sesión activa (confirmación de correo desactivada).
+  if (data.session && data.user) {
+    await supabase
+      .from("perfiles")
+      .upsert({ id: data.user.id, email, nombre, rol: "paciente" }, { onConflict: "id" });
   }
   return data;
 }
