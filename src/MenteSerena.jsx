@@ -43,6 +43,7 @@ import { VistaHerramientas } from "./Herramientas.jsx";
 import { VistaDiario } from "./Diario.jsx";
 import Bienvenida, { onboardingAceptado } from "./Bienvenida.jsx";
 import { VistaPerfil } from "./Perfil.jsx";
+import PieLegal from "./PieLegal.jsx";
 import { Pill, ShieldCheck, Settings, BookHeart, Bell, User } from "lucide-react";
 import { pinActivo } from "./lib/pin";
 import { recordarCita, recordarTarea, recordarRegistroAnimo } from "./lib/calendario";
@@ -297,6 +298,8 @@ function PantallaAcceso({ alIngresar }) {
           {modo === "entrar" ? "Crear cuenta" : "Iniciar sesión"}
         </button>
       </p>
+
+      <PieLegal />
     </div>
   );
 }

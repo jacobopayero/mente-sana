@@ -6,6 +6,7 @@
 // ============================================================================
 import { useState } from "react";
 import { ShieldCheck, Phone, Heart, Lock } from "lucide-react";
+import PieLegal from "./PieLegal.jsx";
 
 const CLAVE = "mente-serena-onboarding";
 
@@ -80,6 +81,8 @@ export default function Bienvenida({ alAceptar }) {
       <button className="btn" onClick={comenzar} disabled={!acepto}>
         Comenzar
       </button>
+
+      <PieLegal />
     </div>
   );
 }

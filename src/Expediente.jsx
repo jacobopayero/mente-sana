@@ -7,6 +7,7 @@
 // ============================================================================
 import { useEffect, useState } from "react";
 import { ChevronLeft, Printer } from "lucide-react";
+import { AVISO_LEGAL } from "./PieLegal.jsx";
 import {
   animoDePaciente,
   suenoDePaciente,
@@ -183,6 +184,8 @@ export function VistaExpediente({ paciente, profesional, onVolver }) {
         <p style={{ fontSize: "0.75rem", color: "var(--tinta-suave)", marginTop: 18, borderTop: "1px solid #eee", paddingTop: 8 }}>
           Documento confidencial generado por Mente Serena. Uso exclusivo del equipo de cuidado.
           No sustituye el criterio clínico. Datos protegidos conforme a la Ley 172-13 (RD).
+          <br />
+          {AVISO_LEGAL}
         </p>
       </div>
     </div>

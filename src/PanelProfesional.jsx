@@ -44,6 +44,7 @@ import {
   medicamentosDePaciente,
 } from "./api";
 import { VistaExpediente } from "./Expediente.jsx";
+import PieLegal from "./PieLegal.jsx";
 import { FileDown } from "lucide-react";
 
 const CARAS = ["", "😣", "😕", "😐", "🙂", "😄"];
@@ -180,6 +181,8 @@ function ListaPacientes({ perfil, salir, onAbrir }) {
           })
         )}
       </div>
+
+      <PieLegal />
     </>
   );
 }
