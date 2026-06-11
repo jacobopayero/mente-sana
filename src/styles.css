@@ -452,3 +452,29 @@ select {
   color: var(--tinta-suave);
   padding: 40px;
 }
+
+/* ---- Impresión / Exportar a PDF ------------------------------------------ */
+@media print {
+  .nav,
+  .banner-demo,
+  .no-print,
+  [aria-label="Necesito apoyo ahora"] {
+    display: none !important;
+  }
+  body,
+  .app,
+  .contenido {
+    background: #fff !important;
+  }
+  .app {
+    max-width: none;
+  }
+  .contenido {
+    padding: 0 !important;
+  }
+  .tarjeta {
+    box-shadow: none;
+    border: 1px solid #e3e3e3;
+    break-inside: avoid;
+  }
+}

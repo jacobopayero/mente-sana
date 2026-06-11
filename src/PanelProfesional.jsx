@@ -43,6 +43,8 @@ import {
   fichaDePaciente,
   medicamentosDePaciente,
 } from "./api";
+import { VistaExpediente } from "./Expediente.jsx";
+import { FileDown } from "lucide-react";
 
 const CARAS = ["", "😣", "😕", "😐", "🙂", "😄"];
 const CALIDAD = { inquieto: "Inquieto", regular: "Regular", reparador: "Reparador" };
@@ -83,6 +85,7 @@ function MiniGrafica({ datos, max, color = "var(--salvia)" }) {
 
 export default function PanelProfesional({ perfil, alSalir }) {
   const [pacienteSel, setPacienteSel] = useState(null);
+  const [expedienteDe, setExpedienteDe] = useState(null);
 
   async function salir() {
     await cerrarSesion();
@@ -96,10 +99,16 @@ export default function PanelProfesional({ perfil, alSalir }) {
       </div>
 
       <div className="contenido" style={{ paddingBottom: 24 }}>
-        {!pacienteSel ? (
+        {expedienteDe ? (
+          <VistaExpediente paciente={expedienteDe} profesional={perfil} onVolver={() => setExpedienteDe(null)} />
+        ) : !pacienteSel ? (
           <ListaPacientes perfil={perfil} salir={salir} onAbrir={setPacienteSel} />
         ) : (
-          <DetallePaciente paciente={pacienteSel} onVolver={() => setPacienteSel(null)} />
+          <DetallePaciente
+            paciente={pacienteSel}
+            onVolver={() => setPacienteSel(null)}
+            onExpediente={() => setExpedienteDe(pacienteSel)}
+          />
         )}
       </div>
     </div>
@@ -176,7 +185,7 @@ function ListaPacientes({ perfil, salir, onAbrir }) {
 }
 
 // ---------------------------------------------------------------------------
-function DetallePaciente({ paciente, onVolver }) {
+function DetallePaciente({ paciente, onVolver, onExpediente }) {
   const [animo, setAnimo] = useState([]);
   const [sueno, setSueno] = useState([]);
   const [alertas, setAlertas] = useState([]);
@@ -241,6 +250,10 @@ function DetallePaciente({ paciente, onVolver }) {
           <h1 style={{ margin: 0 }}>{paciente.nombre}</h1>
         </div>
       </header>
+
+      <button className="btn" style={{ marginBottom: 14 }} onClick={onExpediente}>
+        <FileDown size={18} /> Exportar expediente completo (PDF)
+      </button>
 
       <FichaClinica ficha={ficha} />
 
