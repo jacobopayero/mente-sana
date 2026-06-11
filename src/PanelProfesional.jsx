@@ -26,6 +26,7 @@ import {
   Video,
   MapPin,
   FileText,
+  Pill,
 } from "lucide-react";
 
 import {
@@ -40,6 +41,7 @@ import {
   crearNota,
   citasDePaciente,
   fichaDePaciente,
+  medicamentosDePaciente,
 } from "./api";
 
 const CARAS = ["", "😣", "😕", "😐", "🙂", "😄"];
@@ -54,6 +56,7 @@ const fechaLegible = (iso) => {
 };
 
 const CALIDAD_VAL = { inquieto: 1, regular: 2, reparador: 3 };
+const ROL_LABEL = { terapeuta: "Terapeuta", psiquiatra: "Psiquiatra", admin: "Administración" };
 
 // Mini-gráfica de barras (cualitativa, sin cifras corporales).
 function MiniGrafica({ datos, max, color = "var(--salvia)" }) {
@@ -120,11 +123,8 @@ function ListaPacientes({ perfil, salir, onAbrir }) {
       <header className="encabezado">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
-            <p className="saludo">
-              {perfil.titulo ? perfil.titulo + " " : ""}
-              {perfil.nombre}
-            </p>
-            <h1>Tus pacientes</h1>
+            <p className="saludo">{ROL_LABEL[perfil.rol] || "Profesional"}</p>
+            <h1>{perfil.nombre}</h1>
           </div>
           <button style={{ padding: 8 }} onClick={salir} title="Cerrar sesión">
             <LogOut size={20} color="var(--tinta-suave)" />
@@ -132,6 +132,9 @@ function ListaPacientes({ perfil, salir, onAbrir }) {
         </div>
       </header>
 
+      <div className="seccion-titulo">
+        <Users size={15} /> Tus pacientes
+      </div>
       <div className="tarjeta">
         {cargando ? (
           <p className="vacio">Cargando…</p>
@@ -181,9 +184,10 @@ function DetallePaciente({ paciente, onVolver }) {
   const [notas, setNotas] = useState([]);
   const [citas, setCitas] = useState([]);
   const [ficha, setFicha] = useState({});
+  const [meds, setMeds] = useState([]);
 
   const cargar = useCallback(async () => {
-    const [a, s, al, t, n, c, f] = await Promise.all([
+    const [a, s, al, t, n, c, f, m] = await Promise.all([
       animoDePaciente(paciente.id),
       suenoDePaciente(paciente.id),
       alertasDePaciente(paciente.id),
@@ -191,6 +195,7 @@ function DetallePaciente({ paciente, onVolver }) {
       notasDePaciente(paciente.id),
       citasDePaciente(paciente.id),
       fichaDePaciente(paciente.id),
+      medicamentosDePaciente(paciente.id),
     ]);
     setAnimo(a);
     setSueno(s);
@@ -199,6 +204,7 @@ function DetallePaciente({ paciente, onVolver }) {
     setNotas(n);
     setCitas(c);
     setFicha(f || {});
+    setMeds(m);
   }, [paciente.id]);
 
   useEffect(() => {
@@ -305,6 +311,32 @@ function DetallePaciente({ paciente, onVolver }) {
                 <div className="titulo">{fechaLegible(r.fecha)}</div>
                 <div className="meta">
                   {CALIDAD[r.calidad]} · {RANGOS[r.rango]} descanso
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Medicación (psiquiatría) */}
+      <div className="seccion-titulo">
+        <Pill size={15} /> Medicación
+      </div>
+      <div className="tarjeta">
+        {meds.length === 0 ? (
+          <p className="vacio" style={{ padding: 8 }}>Sin medicamentos registrados.</p>
+        ) : (
+          meds.map((m) => (
+            <div className="item" key={m.id}>
+              <div className="icono-redondo">
+                <Pill size={18} />
+              </div>
+              <div className="cuerpo">
+                <div className="titulo">{m.nombre}</div>
+                <div className="meta">
+                  {[m.dosis, m.horario ? `a las ${(m.horario || "").slice(0, 5)}` : null, m.nota]
+                    .filter(Boolean)
+                    .join(" · ")}
                 </div>
               </div>
             </div>

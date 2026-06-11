@@ -35,11 +35,26 @@ function semilla() {
       },
     ],
   };
+  // Psiquiatra del caso (ejemplo). Reemplaza el nombre por el real.
+  const psiquiatra = {
+    id: "demo-psiquiatra",
+    nombre: "María Pérez",
+    nombre_formal: "María Pérez",
+    titulo: "Dra.",
+    rol: "psiquiatra",
+    perfiles_profesional: [
+      {
+        especialidad: "Psiquiatría · TCA",
+        credenciales: "Médico Psiquiatra",
+        color_hex: "#6d6a9e",
+      },
+    ],
+  };
 
   return {
     sesion: null, // se llena al iniciar sesión
     perfil: paciente,
-    equipo: [terapeuta],
+    equipo: [terapeuta, psiquiatra],
     registros_animo: [
       { id: id(), paciente_id: paciente.id, fecha: diasAtras(4), animo: 3, emociones: ["calma"], nota: "Día tranquilo." },
       { id: id(), paciente_id: paciente.id, fecha: diasAtras(2), animo: 4, emociones: ["esperanza", "calma"], nota: "" },
@@ -127,12 +142,14 @@ export const demo = {
       db.sesion = { user: { id: db.perfil.id, email: email || db.perfil.email }, rol: "paciente" };
     }).sesion;
   },
-  // Solo demo: entrar como 'paciente' o como 'profesional'.
+  // Solo demo: entrar como 'paciente', 'terapeuta' o 'psiquiatra'.
+  // ('profesional' se mantiene como alias de 'terapeuta').
   async iniciarSesionComo(rol) {
     return actualizar((db) => {
-      if (rol === "profesional") {
-        const pro = db.equipo[0];
-        db.sesion = { user: { id: pro.id, email: "profesional@demo" }, rol: "profesional" };
+      const buscado = rol === "profesional" ? "terapeuta" : rol;
+      const pro = db.equipo.find((p) => p.rol === buscado);
+      if (pro) {
+        db.sesion = { user: { id: pro.id, email: `${buscado}@demo` }, rol: "profesional", profId: pro.id };
       } else {
         db.sesion = { user: { id: db.perfil.id, email: db.perfil.email }, rol: "paciente" };
       }
@@ -150,14 +167,14 @@ export const demo = {
     const db = leer();
     if (!db.sesion) return null;
     if (db.sesion.rol === "profesional") {
-      const pro = db.equipo[0];
+      const pro = db.equipo.find((p) => p.id === db.sesion.profId) || db.equipo[0];
       return {
         id: pro.id,
         nombre: pro.nombre,
         nombre_formal: pro.nombre_formal,
         titulo: pro.titulo,
-        rol: pro.rol, // 'terapeuta'
-        email: "profesional@demo",
+        rol: pro.rol, // 'terapeuta' o 'psiquiatra'
+        email: db.sesion.user.email,
       };
     }
     return db.perfil;
@@ -376,6 +393,9 @@ export const demo = {
     actualizar((db) => {
       db.medicamentos = db.medicamentos.filter((m) => m.id !== medId);
     });
+  },
+  async medicamentosDePaciente(pid) {
+    return leer().medicamentos.filter((m) => m.paciente_id === pid && m.activo);
   },
 
   // ---- Perfil y ficha clínica ----------------------------------------------

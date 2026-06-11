@@ -473,6 +473,19 @@ export async function eliminarMedicamento(id) {
   if (error) throw error;
 }
 
+// Vista del profesional: medicamentos de un paciente (RLS controla el acceso).
+export async function medicamentosDePaciente(pacienteId) {
+  if (!estaConfigurado) return demo.medicamentosDePaciente(pacienteId);
+  const { data, error } = await supabase
+    .from("medicamentos")
+    .select("*")
+    .eq("paciente_id", pacienteId)
+    .eq("activo", true)
+    .order("horario", { ascending: true });
+  if (error) throw error;
+  return data;
+}
+
 // ----------------------------------------------------------------------------
 //  DIARIO (journaling)  ·  espacio privado del paciente
 // ----------------------------------------------------------------------------

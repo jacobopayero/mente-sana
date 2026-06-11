@@ -134,7 +134,25 @@ select p.id, t.id
 from perfiles p, perfiles t
 where p.email = 'correo-paciente@ejemplo.com'
   and t.email = 'correo-de-alexandra@ejemplo.com';
+
+-- Convertir una cuenta en psiquiatra y vincularla también con la paciente
+update perfiles set rol = 'psiquiatra', nombre = 'María Pérez', titulo = 'Dra.'
+where email = 'correo-psiquiatra@ejemplo.com';
+
+insert into perfiles_profesional (perfil_id, especialidad, credenciales, color_hex)
+select id, 'Psiquiatría · TCA', 'Médico Psiquiatra', '#6d6a9e'
+from perfiles where email = 'correo-psiquiatra@ejemplo.com';
+
+insert into vinculos_cuidado (paciente_id, profesional_id)
+select p.id, q.id
+from perfiles p, perfiles q
+where p.email = 'correo-paciente@ejemplo.com'
+  and q.email = 'correo-psiquiatra@ejemplo.com';
 ```
+
+El equipo de cuidado puede incluir **terapeuta y psiquiatra**. Ambos ven a la paciente; la
+medicación queda del lado de psiquiatría. En modo demo puedes entrar como cualquiera de los
+tres roles (paciente, terapeuta, psiquiatra).
 
 ---
 
