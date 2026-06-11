@@ -136,7 +136,8 @@ where p.email = 'correo-paciente@ejemplo.com'
   and t.email = 'correo-de-alexandra@ejemplo.com';
 
 -- Convertir una cuenta en psiquiatra y vincularla también con la paciente
-update perfiles set rol = 'psiquiatra', nombre = 'María Pérez', titulo = 'Dra.'
+-- (repite el bloque para cada psiquiatra del caso, p. ej. Dr. Musa y Dr. Rodríguez)
+update perfiles set rol = 'psiquiatra', nombre = 'Musa', titulo = 'Dr.'
 where email = 'correo-psiquiatra@ejemplo.com';
 
 insert into perfiles_profesional (perfil_id, especialidad, credenciales, color_hex)

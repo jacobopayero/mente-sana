@@ -35,26 +35,32 @@ function semilla() {
       },
     ],
   };
-  // Psiquiatra del caso (ejemplo). Reemplaza el nombre por el real.
-  const psiquiatra = {
-    id: "demo-psiquiatra",
-    nombre: "María Pérez",
-    nombre_formal: "María Pérez",
-    titulo: "Dra.",
+  // Psiquiatras del caso.
+  const psiquiatraMusa = {
+    id: "demo-psiquiatra-musa",
+    nombre: "Musa",
+    nombre_formal: "Musa",
+    titulo: "Dr.",
     rol: "psiquiatra",
     perfiles_profesional: [
-      {
-        especialidad: "Psiquiatría · TCA",
-        credenciales: "Médico Psiquiatra",
-        color_hex: "#6d6a9e",
-      },
+      { especialidad: "Psiquiatría · TCA", credenciales: "Médico Psiquiatra", color_hex: "#6d6a9e" },
+    ],
+  };
+  const psiquiatraRodriguez = {
+    id: "demo-psiquiatra-rodriguez",
+    nombre: "Rodríguez",
+    nombre_formal: "Rodríguez",
+    titulo: "Dr.",
+    rol: "psiquiatra",
+    perfiles_profesional: [
+      { especialidad: "Psiquiatría · TCA", credenciales: "Médico Psiquiatra", color_hex: "#7a6fa6" },
     ],
   };
 
   return {
     sesion: null, // se llena al iniciar sesión
     perfil: paciente,
-    equipo: [terapeuta, psiquiatra],
+    equipo: [terapeuta, psiquiatraMusa, psiquiatraRodriguez],
     registros_animo: [
       { id: id(), paciente_id: paciente.id, fecha: diasAtras(4), animo: 3, emociones: ["calma"], nota: "Día tranquilo." },
       { id: id(), paciente_id: paciente.id, fecha: diasAtras(2), animo: 4, emociones: ["esperanza", "calma"], nota: "" },
