@@ -49,6 +49,7 @@ import {
 } from "./api";
 import { VistaExpediente } from "./Expediente.jsx";
 import { Teleconsulta } from "./Teleconsulta.jsx";
+import { AnalisisIA } from "./Analisis.jsx";
 import PieLegal from "./PieLegal.jsx";
 import { FileDown } from "lucide-react";
 
@@ -361,6 +362,8 @@ function DetallePaciente({ paciente, onVolver, onExpediente }) {
       </button>
 
       <FichaClinica ficha={ficha} />
+
+      <AnalisisIA animo={animo} sueno={sueno} tareas={tareas} />
 
       {alertas.length > 0 && (
         <div className="aviso">
