@@ -109,6 +109,7 @@ function semilla() {
     ficha_clinica: {
       paciente_id: paciente.id,
       antecedentes: [],
+      sintomas: [],
       fecha_nacimiento: "",
       genero: "",
       contacto_emergencia: "",

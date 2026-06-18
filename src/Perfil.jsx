@@ -79,7 +79,7 @@ export function VistaPerfil({ irA, alActualizar }) {
     setGuardando(true);
     try {
       await actualizarMiPerfil({ nombre: nombre.trim(), foto_url: foto });
-      const payload = { antecedentes: ficha.antecedentes || [] };
+      const payload = { antecedentes: ficha.antecedentes || [], sintomas: ficha.sintomas || [] };
       CAMPOS_FICHA.forEach((c) => {
         payload[c.k] = ficha[c.k] || (c.tipo === "date" ? null : "");
       });

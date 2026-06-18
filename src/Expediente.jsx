@@ -113,6 +113,9 @@ export function VistaExpediente({ paciente, profesional, onVolver }) {
           ) : (
             <Fila>Sin ficha completada.</Fila>
           )}
+          {d.ficha.riesgo && (
+            <Fila><strong>Evaluación de riesgo:</strong> {d.ficha.riesgo}{d.ficha.riesgo_nota ? ` — ${d.ficha.riesgo_nota}` : ""}</Fila>
+          )}
         </Seccion>
 
         {/* Medicación */}

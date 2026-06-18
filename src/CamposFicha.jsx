@@ -4,6 +4,7 @@
 //
 //  SALVAGUARDA: ningún campo de peso, IMC, calorías ni medidas corporales.
 //  Campos sensibles (abuso, consumo) son OPCIONALES y confidenciales.
+//  Los antecedentes y síntomas son MARCAS (datos estructurados) para análisis.
 // ============================================================================
 
 export const GRUPOS_FICHA = [
@@ -12,8 +13,18 @@ export const GRUPOS_FICHA = [
     campos: [
       { k: "fecha_nacimiento", label: "Fecha de nacimiento", tipo: "date" },
       { k: "genero", label: "Género", tipo: "text", ph: "Cómo se identifica" },
+      { k: "estado_civil", label: "Estado civil", tipo: "select", opciones: ["Soltero/a", "En pareja", "Casado/a", "Divorciado/a", "Viudo/a"] },
+      { k: "ocupacion", label: "Ocupación", tipo: "text", ph: "A qué se dedica" },
+      { k: "escolaridad", label: "Escolaridad", tipo: "select", opciones: ["Primaria", "Secundaria", "Técnico", "Universitario", "Posgrado", "Ninguna"] },
+      { k: "convivencia", label: "¿Con quién vive?", tipo: "select", opciones: ["Solo/a", "Con pareja", "Con padres", "Con familia", "Compañeros", "Otro"] },
       { k: "religion", label: "Religión / creencias", tipo: "text", ph: "Opcional" },
       { k: "crianza", label: "Crianza / origen familiar", tipo: "text", ph: "Con ambos padres, con uno, familia extensa, adoptada, institución…" },
+    ],
+  },
+  {
+    titulo: "Motivo de consulta",
+    campos: [
+      { k: "motivo_consulta", label: "¿Qué te trae a consulta?", tipo: "area", ph: "El motivo principal y desde cuándo" },
     ],
   },
   {
@@ -29,8 +40,9 @@ export const GRUPOS_FICHA = [
     campos: [
       { k: "infancia", label: "Aspectos de la niñez", tipo: "area", ph: "Contexto o eventos relevantes de la infancia" },
       { k: "antecedentes_familiares", label: "Antecedentes familiares (salud mental)", tipo: "area" },
-      { k: "abuso", label: "Antecedentes de abuso o trauma", tipo: "area", ph: "Opcional" },
-      { k: "consumo", label: "Consumo de sustancias", tipo: "area", ph: "Tabaco, alcohol u otras (o “ninguno”)" },
+      { k: "abuso", label: "Abuso o trauma (detalle)", tipo: "area", ph: "Opcional" },
+      { k: "consumo", label: "Consumo de sustancias (detalle)", tipo: "area", ph: "Opcional" },
+      { k: "frecuencia_consumo", label: "Frecuencia de consumo", tipo: "select", opciones: ["No consume", "Ocasional", "Fin de semana", "Semanal", "Diario"] },
       { k: "actividad_fisica", label: "Actividad física / deporte", tipo: "area" },
     ],
   },
@@ -42,6 +54,12 @@ export const GRUPOS_FICHA = [
       { k: "cirugias", label: "Cirugías (incluye estéticas)", tipo: "area" },
       { k: "embarazos", label: "Embarazos / gestaciones (si aplica)", tipo: "area" },
       { k: "tratamientos_previos", label: "Tratamientos previos", tipo: "area" },
+    ],
+  },
+  {
+    titulo: "Plan",
+    campos: [
+      { k: "objetivos", label: "Objetivos de tratamiento", tipo: "area", ph: "Metas acordadas con el equipo" },
       { k: "notas", label: "Otras notas", tipo: "area" },
     ],
   },
@@ -49,12 +67,21 @@ export const GRUPOS_FICHA = [
 
 export const CAMPOS_FICHA = GRUPOS_FICHA.flatMap((g) => g.campos);
 
-// Checklist de antecedentes (marcar los que apliquen).
+// Checklist de antecedentes (marcar los que apliquen) — datos estructurados.
 export const GRUPOS_ANTECEDENTES = [
-  { titulo: "Salud mental", items: ["Depresión", "Ansiedad", "TCA", "Autolesiones", "Ideación/intento suicida", "Trastorno bipolar", "TOC", "Trauma o abuso"] },
-  { titulo: "Consumo", items: ["Tabaco", "Alcohol", "Otras sustancias"] },
+  { titulo: "Salud mental", items: ["Depresión", "Ansiedad", "TCA", "Autolesiones", "Ideación/intento suicida", "Trastorno bipolar", "TOC", "TEPT", "TDAH", "Fobias", "Trastorno límite"] },
+  { titulo: "Conducta / control de impulsos", items: ["Cleptomanía", "Mitomanía", "Ludopatía", "Compras compulsivas", "Tricotilomanía", "Piromanía"] },
+  { titulo: "Abuso / trauma", items: ["Abuso físico", "Abuso sexual", "Abuso emocional", "Negligencia", "Violencia intrafamiliar", "Acoso/bullying"] },
+  { titulo: "Consumo", items: ["Tabaco", "Alcohol", "Cafeína", "Cannabis", "Cocaína", "Medicamentos sin receta", "Otras sustancias"] },
   { titulo: "Médicos", items: ["Cirugías estéticas", "Otras cirugías", "Hospitalizaciones", "Embarazo actual", "Embarazos previos"] },
   { titulo: "Familiares", items: ["Salud mental en la familia", "TCA en la familia"] },
+];
+
+// Checklist de síntomas actuales.
+export const SINTOMAS = [
+  "Insomnio", "Fatiga", "Irritabilidad", "Llanto frecuente", "Aislamiento",
+  "Falta de concentración", "Pérdida de interés", "Ansiedad/pánico",
+  "Pensamientos intrusivos", "Cambios en el apetito", "Tristeza persistente", "Culpa excesiva",
 ];
 
 const fechaLegible = (iso) => {
@@ -69,26 +96,22 @@ export function camposConValor(ficha = {}) {
     label: c.label,
     valor: c.tipo === "date" ? fechaLegible(ficha[c.k]) : ficha[c.k],
   }));
+  if (ficha.sintomas && ficha.sintomas.length) {
+    res.unshift({ label: "Síntomas actuales", valor: ficha.sintomas.join(", ") });
+  }
   if (ficha.antecedentes && ficha.antecedentes.length) {
     res.unshift({ label: "Antecedentes", valor: ficha.antecedentes.join(", ") });
   }
   return res;
 }
 
-// Formulario reutilizable de la ficha (paciente o profesional).
-export function CamposFicha({ ficha, setF }) {
-  const seleccion = new Set(ficha.antecedentes || []);
-  function alternar(item) {
-    const s = new Set(seleccion);
-    s.has(item) ? s.delete(item) : s.add(item);
-    setF("antecedentes", [...s]);
-  }
-
+// Checklist de marcas reutilizable.
+function Checklist({ titulo, grupos, valores, onToggle }) {
+  const sel = new Set(valores || []);
   return (
     <>
-      {/* Checklist de antecedentes (datos estructurados para análisis) */}
-      <div className="seccion-titulo" style={{ marginLeft: 0 }}>Antecedentes (marca los que apliquen)</div>
-      {GRUPOS_ANTECEDENTES.map((g) => (
+      <div className="seccion-titulo" style={{ marginLeft: 0 }}>{titulo}</div>
+      {grupos.map((g) => (
         <div key={g.titulo} style={{ marginBottom: 12 }}>
           <div className="meta" style={{ marginBottom: 6, fontWeight: 600 }}>{g.titulo}</div>
           <div className="chips">
@@ -96,8 +119,8 @@ export function CamposFicha({ ficha, setF }) {
               <button
                 type="button"
                 key={it}
-                className={"chip" + (seleccion.has(it) ? " activa" : "")}
-                onClick={() => alternar(it)}
+                className={"chip" + (sel.has(it) ? " activa" : "")}
+                onClick={() => onToggle(it)}
               >
                 {it}
               </button>
@@ -105,6 +128,33 @@ export function CamposFicha({ ficha, setF }) {
           </div>
         </div>
       ))}
+    </>
+  );
+}
+
+function toggleEnLista(lista, item) {
+  const s = new Set(lista || []);
+  s.has(item) ? s.delete(item) : s.add(item);
+  return [...s];
+}
+
+// Formulario reutilizable de la ficha (paciente o profesional).
+export function CamposFicha({ ficha, setF }) {
+  return (
+    <>
+      <Checklist
+        titulo="Antecedentes (marca los que apliquen)"
+        grupos={GRUPOS_ANTECEDENTES}
+        valores={ficha.antecedentes}
+        onToggle={(it) => setF("antecedentes", toggleEnLista(ficha.antecedentes, it))}
+      />
+
+      <Checklist
+        titulo="Síntomas actuales (marca los que apliquen)"
+        grupos={[{ titulo: "Síntomas", items: SINTOMAS }]}
+        valores={ficha.sintomas}
+        onToggle={(it) => setF("sintomas", toggleEnLista(ficha.sintomas, it))}
+      />
 
       {GRUPOS_FICHA.map((g) => (
         <div key={g.titulo}>
@@ -115,6 +165,13 @@ export function CamposFicha({ ficha, setF }) {
               <label>{c.label}</label>
               {c.tipo === "area" ? (
                 <textarea value={ficha[c.k] || ""} onChange={(e) => setF(c.k, e.target.value)} placeholder={c.ph || ""} />
+              ) : c.tipo === "select" ? (
+                <select value={ficha[c.k] || ""} onChange={(e) => setF(c.k, e.target.value)}>
+                  <option value="">Seleccionar…</option>
+                  {c.opciones.map((o) => (
+                    <option key={o} value={o}>{o}</option>
+                  ))}
+                </select>
               ) : (
                 <input type={c.tipo} value={ficha[c.k] || ""} onChange={(e) => setF(c.k, e.target.value)} placeholder={c.ph || ""} />
               )}

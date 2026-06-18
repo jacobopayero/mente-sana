@@ -365,6 +365,8 @@ function DetallePaciente({ paciente, onVolver, onExpediente }) {
 
       <FichaClinica ficha={ficha} pacienteId={paciente.id} onGuardar={cargar} />
 
+      <EvaluacionRiesgo ficha={ficha} pacienteId={paciente.id} onGuardar={cargar} />
+
       <AnalisisIA animo={animo} sueno={sueno} tareas={tareas} />
 
       {alertas.length > 0 && (
@@ -497,6 +499,53 @@ function DetallePaciente({ paciente, onVolver, onExpediente }) {
             </div>
           ))
         )}
+      </div>
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+//  Evaluación de riesgo — uso clínico (solo profesional; el paciente no la ve).
+function EvaluacionRiesgo({ ficha, pacienteId, onGuardar }) {
+  const [nivel, setNivel] = useState(ficha.riesgo || "");
+  const [nota, setNota] = useState(ficha.riesgo_nota || "");
+  const [guardando, setGuardando] = useState(false);
+
+  useEffect(() => {
+    setNivel(ficha.riesgo || "");
+    setNota(ficha.riesgo_nota || "");
+  }, [ficha]);
+
+  async function guardar() {
+    setGuardando(true);
+    try {
+      await guardarFichaDePaciente(pacienteId, { riesgo: nivel, riesgo_nota: nota });
+      onGuardar && (await onGuardar());
+    } finally {
+      setGuardando(false);
+    }
+  }
+
+  return (
+    <>
+      <div className="seccion-titulo">
+        <FileText size={15} /> Evaluación de riesgo (uso clínico)
+      </div>
+      <div className="tarjeta">
+        <div className="chips">
+          {["Bajo", "Moderado", "Alto"].map((n) => (
+            <button type="button" key={n} className={"chip" + (nivel === n ? " activa" : "")} onClick={() => setNivel(n)}>
+              {n}
+            </button>
+          ))}
+        </div>
+        <div className="campo" style={{ marginTop: 10 }}>
+          <label>Nota de riesgo (no visible al paciente)</label>
+          <textarea value={nota} onChange={(e) => setNota(e.target.value)} placeholder="Observaciones de riesgo, plan de manejo…" />
+        </div>
+        <button className="btn" onClick={guardar} disabled={guardando}>
+          {guardando ? "Guardando…" : "Guardar evaluación"}
+        </button>
       </div>
     </>
   );
