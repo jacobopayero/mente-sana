@@ -110,6 +110,18 @@ export async function guardarFichaClinica(campos) {
   return data;
 }
 
+// El profesional completa/edita la ficha del paciente (RLS: equipo a cargo).
+export async function guardarFichaDePaciente(pacienteId, campos) {
+  if (!estaConfigurado) return demo.guardarFichaClinica(campos);
+  const { data, error } = await supabase
+    .from("ficha_clinica")
+    .upsert({ paciente_id: pacienteId, ...campos, actualizado_en: new Date().toISOString() })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
 // Vista del profesional: ficha clínica de un paciente (RLS controla el acceso).
 export async function fichaDePaciente(pacienteId) {
   if (!estaConfigurado) return demo.fichaDePaciente(pacienteId);

@@ -8,6 +8,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, Camera, ShieldCheck, User } from "lucide-react";
 import { miPerfil, actualizarMiPerfil, getFichaClinica, guardarFichaClinica } from "./api";
+import { CamposFicha, CAMPOS_FICHA } from "./CamposFicha.jsx";
 
 // Lee una imagen y la reduce a ~256px (data-URL JPEG) para no pesar.
 function comprimirImagen(file, max = 256) {
@@ -78,16 +79,11 @@ export function VistaPerfil({ irA, alActualizar }) {
     setGuardando(true);
     try {
       await actualizarMiPerfil({ nombre: nombre.trim(), foto_url: foto });
-      await guardarFichaClinica({
-        fecha_nacimiento: ficha.fecha_nacimiento || null,
-        genero: ficha.genero || "",
-        contacto_emergencia: ficha.contacto_emergencia || "",
-        contacto_emergencia_tel: ficha.contacto_emergencia_tel || "",
-        alergias: ficha.alergias || "",
-        condiciones: ficha.condiciones || "",
-        tratamientos_previos: ficha.tratamientos_previos || "",
-        notas: ficha.notas || "",
+      const payload = {};
+      CAMPOS_FICHA.forEach((c) => {
+        payload[c.k] = ficha[c.k] || (c.tipo === "date" ? null : "");
       });
+      await guardarFichaClinica(payload);
       setOk(true);
       setTimeout(() => setOk(false), 2500);
       alActualizar && alActualizar();
@@ -185,40 +181,9 @@ export function VistaPerfil({ irA, alActualizar }) {
       </div>
 
       <div className="tarjeta">
-        <div className="campo">
-          <label>Fecha de nacimiento</label>
-          <input type="date" value={ficha.fecha_nacimiento || ""} onChange={(e) => setF("fecha_nacimiento", e.target.value)} />
-        </div>
-        <div className="campo">
-          <label>Género (opcional)</label>
-          <input value={ficha.genero || ""} onChange={(e) => setF("genero", e.target.value)} placeholder="Cómo te identificas" />
-        </div>
-        <div className="campo">
-          <label>Contacto de emergencia — nombre</label>
-          <input value={ficha.contacto_emergencia || ""} onChange={(e) => setF("contacto_emergencia", e.target.value)} placeholder="Ej.: mi mamá, Ana" />
-        </div>
-        <div className="campo">
-          <label>Contacto de emergencia — teléfono</label>
-          <input type="tel" value={ficha.contacto_emergencia_tel || ""} onChange={(e) => setF("contacto_emergencia_tel", e.target.value)} placeholder="Número" />
-        </div>
-        <div className="campo">
-          <label>Alergias</label>
-          <textarea value={ficha.alergias || ""} onChange={(e) => setF("alergias", e.target.value)} placeholder="Medicamentos, alimentos, etc. (o 'ninguna')" />
-        </div>
-        <div className="campo">
-          <label>Condiciones médicas relevantes</label>
-          <textarea value={ficha.condiciones || ""} onChange={(e) => setF("condiciones", e.target.value)} placeholder="Diagnósticos o condiciones que tu equipo deba conocer" />
-        </div>
-        <div className="campo">
-          <label>Tratamientos previos</label>
-          <textarea value={ficha.tratamientos_previos || ""} onChange={(e) => setF("tratamientos_previos", e.target.value)} placeholder="Terapias o tratamientos anteriores" />
-        </div>
-        <div className="campo">
-          <label>Algo más que quieras que tu equipo sepa</label>
-          <textarea value={ficha.notas || ""} onChange={(e) => setF("notas", e.target.value)} placeholder="Lo que sientas importante" />
-        </div>
+        <CamposFicha ficha={ficha} setF={setF} />
 
-        <button className="btn" onClick={guardar} disabled={guardando}>
+        <button className="btn" onClick={guardar} disabled={guardando} style={{ marginTop: 8 }}>
           {ok ? "Guardado 🌿" : guardando ? "Guardando…" : "Guardar mi perfil"}
         </button>
       </div>

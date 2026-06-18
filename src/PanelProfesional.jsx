@@ -43,6 +43,7 @@ import {
   crearNota,
   citasDePaciente,
   fichaDePaciente,
+  guardarFichaDePaciente,
   medicamentosDePaciente,
   listarReferidos,
   crearReferido,
@@ -50,6 +51,7 @@ import {
 import { VistaExpediente } from "./Expediente.jsx";
 import { Teleconsulta } from "./Teleconsulta.jsx";
 import { AnalisisIA } from "./Analisis.jsx";
+import { CamposFicha, camposConValor } from "./CamposFicha.jsx";
 import PieLegal from "./PieLegal.jsx";
 import { FileDown } from "lucide-react";
 
@@ -361,7 +363,7 @@ function DetallePaciente({ paciente, onVolver, onExpediente }) {
         <FileDown size={18} /> Exportar expediente completo (PDF)
       </button>
 
-      <FichaClinica ficha={ficha} />
+      <FichaClinica ficha={ficha} pacienteId={paciente.id} onGuardar={cargar} />
 
       <AnalisisIA animo={animo} sueno={sueno} tareas={tareas} />
 
@@ -501,32 +503,61 @@ function DetallePaciente({ paciente, onVolver, onExpediente }) {
 }
 
 // ---------------------------------------------------------------------------
-function FichaClinica({ ficha }) {
-  const campos = [
-    ["Fecha de nacimiento", ficha.fecha_nacimiento && fechaLegible(ficha.fecha_nacimiento)],
-    ["Género", ficha.genero],
-    ["Contacto de emergencia", [ficha.contacto_emergencia, ficha.contacto_emergencia_tel].filter(Boolean).join(" · ")],
-    ["Alergias", ficha.alergias],
-    ["Condiciones relevantes", ficha.condiciones],
-    ["Tratamientos previos", ficha.tratamientos_previos],
-    ["Notas del paciente", ficha.notas],
-  ].filter(([, v]) => v);
+function FichaClinica({ ficha, pacienteId, onGuardar }) {
+  const [editar, setEditar] = useState(false);
+  const [datos, setDatos] = useState(ficha);
+  const [guardando, setGuardando] = useState(false);
+
+  useEffect(() => setDatos(ficha), [ficha]);
+
+  const lista = camposConValor(ficha);
+  const setF = (k, v) => setDatos((p) => ({ ...p, [k]: v }));
+
+  async function guardar() {
+    setGuardando(true);
+    try {
+      await guardarFichaDePaciente(pacienteId, datos);
+      setEditar(false);
+      onGuardar && (await onGuardar());
+    } finally {
+      setGuardando(false);
+    }
+  }
 
   return (
     <>
       <div className="seccion-titulo">
-        <FileText size={15} /> Ficha clínica
+        <FileText size={15} /> Ficha clínica (anamnesis)
       </div>
       <div className="tarjeta">
-        {campos.length === 0 ? (
-          <p className="vacio" style={{ padding: 8 }}>El paciente aún no ha completado su ficha.</p>
-        ) : (
-          campos.map(([etiqueta, valor]) => (
-            <div className="item" key={etiqueta} style={{ display: "block" }}>
-              <div className="meta">{etiqueta}</div>
-              <div className="titulo" style={{ fontWeight: 500, whiteSpace: "pre-wrap" }}>{valor}</div>
+        {editar ? (
+          <>
+            <CamposFicha ficha={datos} setF={setF} />
+            <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
+              <button className="btn" onClick={guardar} disabled={guardando}>
+                {guardando ? "Guardando…" : "Guardar ficha"}
+              </button>
+              <button className="btn secundario" onClick={() => { setDatos(ficha); setEditar(false); }}>
+                Cancelar
+              </button>
             </div>
-          ))
+          </>
+        ) : (
+          <>
+            {lista.length === 0 ? (
+              <p className="vacio" style={{ padding: 8 }}>El paciente aún no ha completado su ficha.</p>
+            ) : (
+              lista.map(({ label, valor }) => (
+                <div className="item" key={label} style={{ display: "block" }}>
+                  <div className="meta">{label}</div>
+                  <div className="titulo" style={{ fontWeight: 500, whiteSpace: "pre-wrap" }}>{valor}</div>
+                </div>
+              ))
+            )}
+            <button className="btn fantasma" style={{ marginTop: 12 }} onClick={() => setEditar(true)}>
+              Completar / editar ficha
+            </button>
+          </>
         )}
       </div>
     </>

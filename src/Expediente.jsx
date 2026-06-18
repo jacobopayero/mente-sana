@@ -8,6 +8,7 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, Printer } from "lucide-react";
 import { AVISO_LEGAL } from "./PieLegal.jsx";
+import { camposConValor } from "./CamposFicha.jsx";
 import {
   animoDePaciente,
   suenoDePaciente,
@@ -103,20 +104,13 @@ export function VistaExpediente({ paciente, profesional, onVolver }) {
           </div>
         </div>
 
-        {/* Ficha clínica */}
-        <Seccion titulo="Ficha clínica">
-          {[
-            ["Fecha de nacimiento", d.ficha.fecha_nacimiento && fecha(d.ficha.fecha_nacimiento)],
-            ["Género", d.ficha.genero],
-            ["Contacto de emergencia", [d.ficha.contacto_emergencia, d.ficha.contacto_emergencia_tel].filter(Boolean).join(" · ")],
-            ["Alergias", d.ficha.alergias],
-            ["Condiciones relevantes", d.ficha.condiciones],
-            ["Tratamientos previos", d.ficha.tratamientos_previos],
-            ["Notas del paciente", d.ficha.notas],
-          ].filter(([, v]) => v).map(([k, v]) => (
-            <Fila key={k}><strong>{k}:</strong> {v}</Fila>
-          ))}
-          {!d.ficha.fecha_nacimiento && !d.ficha.condiciones && !d.ficha.alergias && (
+        {/* Ficha clínica / anamnesis */}
+        <Seccion titulo="Ficha clínica (anamnesis)">
+          {camposConValor(d.ficha).length ? (
+            camposConValor(d.ficha).map(({ label, valor }) => (
+              <Fila key={label}><strong>{label}:</strong> {valor}</Fila>
+            ))
+          ) : (
             <Fila>Sin ficha completada.</Fila>
           )}
         </Seccion>
