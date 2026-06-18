@@ -474,6 +474,75 @@ export async function eliminarMedicamento(id) {
 }
 
 // ----------------------------------------------------------------------------
+//  TELECONSULTA  (número asociado + registro de consultas)
+//  La GRABACIÓN real de llamadas requiere una integración telefónica (p. ej.
+//  Twilio) y consentimiento explícito; aquí se gestiona el registro y el número.
+// ----------------------------------------------------------------------------
+export async function getNumeroAsociado() {
+  if (!estaConfigurado) return demo.getNumeroAsociado();
+  const user = await usuarioActual();
+  const { data } = await supabase
+    .from("perfiles_profesional")
+    .select("numero_asociado")
+    .eq("perfil_id", user.id)
+    .maybeSingle();
+  return data?.numero_asociado || "";
+}
+
+export async function setNumeroAsociado(numero) {
+  if (!estaConfigurado) return demo.setNumeroAsociado(numero);
+  const user = await usuarioActual();
+  const { error } = await supabase
+    .from("perfiles_profesional")
+    .update({ numero_asociado: numero })
+    .eq("perfil_id", user.id);
+  if (error) throw error;
+  return numero;
+}
+
+export async function listarTeleconsultas() {
+  if (!estaConfigurado) return demo.listarTeleconsultas();
+  const { data, error } = await supabase
+    .from("teleconsultas")
+    .select("*")
+    .order("fecha", { ascending: false });
+  if (error) throw error;
+  return data;
+}
+
+export async function crearTeleconsulta({ paciente_nombre, nota }) {
+  if (!estaConfigurado) return demo.crearTeleconsulta({ paciente_nombre, nota });
+  const user = await usuarioActual();
+  const { data, error } = await supabase
+    .from("teleconsultas")
+    .insert({ paciente_nombre, profesional_id: user.id, nota })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// ----------------------------------------------------------------------------
+//  ADMINISTRACIÓN / CENTRAL (HQ)
+// ----------------------------------------------------------------------------
+export async function panoramaAdmin() {
+  if (!estaConfigurado) return demo.panoramaAdmin();
+  const [pros, pacs, refs, tele] = await Promise.all([
+    supabase.from("perfiles").select("id, nombre, titulo, rol").in("rol", ["terapeuta", "psiquiatra"]),
+    supabase.from("perfiles").select("id, nombre, email, foto_url").eq("rol", "paciente"),
+    supabase.from("referidos").select("*").order("creado_en", { ascending: false }),
+    supabase.from("teleconsultas").select("*").order("fecha", { ascending: false }),
+  ]);
+  return {
+    profesionales: pros.data || [],
+    pacientes: pacs.data || [],
+    referidos: refs.data || [],
+    teleconsultas: tele.data || [],
+    numero_asociado: "",
+  };
+}
+
+// ----------------------------------------------------------------------------
 //  REFERIDOS (profesional → profesional)
 // ----------------------------------------------------------------------------
 export async function listarReferidos() {

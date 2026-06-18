@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 
 import PanelProfesional from "./PanelProfesional.jsx";
+import PanelAdmin from "./PanelAdmin.jsx";
 import PinLock from "./PinLock.jsx";
 import {
   VistaMedicacion,
@@ -182,8 +183,10 @@ export default function MenteSerena() {
     return <PantallaAcceso alIngresar={refrescarPerfil} />;
   }
 
-  const esProfesional = ["terapeuta", "psiquiatra", "admin"].includes(perfil.rol);
-  if (esProfesional) {
+  if (perfil.rol === "admin") {
+    return <PanelAdmin perfil={perfil} alSalir={refrescarPerfil} />;
+  }
+  if (["terapeuta", "psiquiatra"].includes(perfil.rol)) {
     return <PanelProfesional perfil={perfil} alSalir={refrescarPerfil} />;
   }
 
@@ -250,8 +253,11 @@ function PantallaAcceso({ alIngresar }) {
           <button className="btn secundario" style={{ marginBottom: 10 }} onClick={() => entrarDemo("terapeuta")}>
             Entrar como terapeuta (demo)
           </button>
-          <button className="btn secundario" onClick={() => entrarDemo("psiquiatra")}>
+          <button className="btn secundario" style={{ marginBottom: 10 }} onClick={() => entrarDemo("psiquiatra")}>
             Entrar como psiquiatra (demo)
+          </button>
+          <button className="btn secundario" onClick={() => entrarDemo("admin")}>
+            Entrar como central / HQ (demo)
           </button>
         </div>
       )}

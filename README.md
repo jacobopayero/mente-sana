@@ -71,6 +71,11 @@ decidir si el paciente las ve). En modo demo, usa el botón **"Entrar como profe
   "activa hasta…". El cobro real (Stripe / Apple-RevenueCat) se conecta después.
 - **Derechos reservados**: aviso legal de autoría (Jacobo Payero) en acceso, bienvenida,
   panel y expediente.
+- **Central / Administración (HQ)**: rol `admin` (dirección) con vista interconectada de toda
+  la red — profesionales, pacientes, referidos y teleconsultas. En demo: "Entrar como central / HQ".
+- **Teleconsulta**: número asociado por profesional y registro de consultas. La **grabación**
+  para evaluación/análisis requiere integración telefónica externa (p. ej. Twilio) y
+  **consentimiento** explícito (`supabase/07_teleconsulta.sql`).
 
 ---
 

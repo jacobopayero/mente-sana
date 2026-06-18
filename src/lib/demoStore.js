@@ -57,10 +57,34 @@ function semilla() {
     ],
   };
 
+  // Médico "central" / dirección de la app (HQ).
+  const central = {
+    id: "demo-central",
+    nombre: "Dirección Mente Serena",
+    nombre_formal: "Dirección clínica",
+    titulo: "",
+    rol: "admin",
+    email: "central@demo",
+  };
+
   return {
     sesion: null, // se llena al iniciar sesión
     perfil: paciente,
     equipo: [terapeuta, psiquiatraMusa, psiquiatraRodriguez],
+    central,
+    numero_asociado: "",
+    teleconsultas: [
+      {
+        id: id(),
+        paciente_nombre: paciente.nombre,
+        profesional_nombre: "Terapeuta Alexandra García",
+        fecha: diasAtras(5),
+        duracion_min: 45,
+        estado: "registrada",
+        grabacion: false,
+        nota: "Sesión individual de seguimiento.",
+      },
+    ],
     registros_animo: [
       { id: id(), paciente_id: paciente.id, fecha: diasAtras(4), animo: 3, emociones: ["calma"], nota: "Día tranquilo." },
       { id: id(), paciente_id: paciente.id, fecha: diasAtras(2), animo: 4, emociones: ["esperanza", "calma"], nota: "" },
@@ -166,6 +190,10 @@ export const demo = {
   // ('profesional' se mantiene como alias de 'terapeuta').
   async iniciarSesionComo(rol) {
     return actualizar((db) => {
+      if (rol === "admin" || rol === "central") {
+        db.sesion = { user: { id: db.central.id, email: db.central.email }, rol: "admin", profId: db.central.id };
+        return;
+      }
       const buscado = rol === "profesional" ? "terapeuta" : rol;
       const pro = db.equipo.find((p) => p.rol === buscado);
       if (pro) {
@@ -186,6 +214,9 @@ export const demo = {
   async miPerfil() {
     const db = leer();
     if (!db.sesion) return null;
+    if (db.sesion.rol === "admin") {
+      return { ...db.central };
+    }
     if (db.sesion.rol === "profesional") {
       const pro = db.equipo.find((p) => p.id === db.sesion.profId) || db.equipo[0];
       return {
@@ -425,6 +456,52 @@ export const demo = {
   },
   async medicamentosDePaciente(pid) {
     return leer().medicamentos.filter((m) => m.paciente_id === pid && m.activo);
+  },
+
+  // ---- Teleconsulta (número asociado + registro de llamadas) ---------------
+  async getNumeroAsociado() {
+    return leer().numero_asociado || "";
+  },
+  async setNumeroAsociado(numero) {
+    actualizar((db) => {
+      db.numero_asociado = numero;
+    });
+    return numero;
+  },
+  async listarTeleconsultas() {
+    return [...(leer().teleconsultas || [])].sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
+  },
+  async crearTeleconsulta({ paciente_nombre, nota }) {
+    let g;
+    actualizar((db) => {
+      const yo = db.equipo.find((p) => p.id === db.sesion?.profId);
+      const nombrePro = yo ? `${yo.titulo ? yo.titulo + " " : ""}${yo.nombre}` : "Profesional";
+      g = {
+        id: id(),
+        paciente_nombre,
+        profesional_nombre: nombrePro,
+        fecha: hoy(),
+        duracion_min: 0,
+        estado: "registrada",
+        grabacion: false, // requiere integración telefónica para grabar
+        nota: nota || "",
+      };
+      if (!db.teleconsultas) db.teleconsultas = [];
+      db.teleconsultas.push(g);
+    });
+    return g;
+  },
+
+  // ---- Panorama de la central (HQ) -----------------------------------------
+  async panoramaAdmin() {
+    const db = leer();
+    return {
+      profesionales: db.equipo,
+      pacientes: [{ id: db.perfil.id, nombre: db.perfil.nombre, email: db.perfil.email, foto_url: db.perfil.foto_url }],
+      referidos: db.referidos || [],
+      teleconsultas: db.teleconsultas || [],
+      numero_asociado: db.numero_asociado || "",
+    };
   },
 
   // ---- Referidos (profesional → profesional) -------------------------------

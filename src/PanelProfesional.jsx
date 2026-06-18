@@ -48,6 +48,7 @@ import {
   crearReferido,
 } from "./api";
 import { VistaExpediente } from "./Expediente.jsx";
+import { Teleconsulta } from "./Teleconsulta.jsx";
 import PieLegal from "./PieLegal.jsx";
 import { FileDown } from "lucide-react";
 
@@ -187,6 +188,8 @@ function ListaPacientes({ perfil, salir, onAbrir }) {
       </div>
 
       <RegistroReferidos />
+
+      <Teleconsulta />
 
       <PieLegal />
     </>
