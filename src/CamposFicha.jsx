@@ -49,6 +49,14 @@ export const GRUPOS_FICHA = [
 
 export const CAMPOS_FICHA = GRUPOS_FICHA.flatMap((g) => g.campos);
 
+// Checklist de antecedentes (marcar los que apliquen).
+export const GRUPOS_ANTECEDENTES = [
+  { titulo: "Salud mental", items: ["Depresión", "Ansiedad", "TCA", "Autolesiones", "Ideación/intento suicida", "Trastorno bipolar", "TOC", "Trauma o abuso"] },
+  { titulo: "Consumo", items: ["Tabaco", "Alcohol", "Otras sustancias"] },
+  { titulo: "Médicos", items: ["Cirugías estéticas", "Otras cirugías", "Hospitalizaciones", "Embarazo actual", "Embarazos previos"] },
+  { titulo: "Familiares", items: ["Salud mental en la familia", "TCA en la familia"] },
+];
+
 const fechaLegible = (iso) => {
   if (!iso) return "";
   const d = new Date(String(iso).slice(0, 10) + "T00:00:00");
@@ -57,16 +65,47 @@ const fechaLegible = (iso) => {
 
 // Devuelve [{label, valor}] solo de los campos con valor (para mostrar).
 export function camposConValor(ficha = {}) {
-  return CAMPOS_FICHA.filter((c) => ficha[c.k]).map((c) => ({
+  const res = CAMPOS_FICHA.filter((c) => ficha[c.k]).map((c) => ({
     label: c.label,
     valor: c.tipo === "date" ? fechaLegible(ficha[c.k]) : ficha[c.k],
   }));
+  if (ficha.antecedentes && ficha.antecedentes.length) {
+    res.unshift({ label: "Antecedentes", valor: ficha.antecedentes.join(", ") });
+  }
+  return res;
 }
 
 // Formulario reutilizable de la ficha (paciente o profesional).
 export function CamposFicha({ ficha, setF }) {
+  const seleccion = new Set(ficha.antecedentes || []);
+  function alternar(item) {
+    const s = new Set(seleccion);
+    s.has(item) ? s.delete(item) : s.add(item);
+    setF("antecedentes", [...s]);
+  }
+
   return (
     <>
+      {/* Checklist de antecedentes (datos estructurados para análisis) */}
+      <div className="seccion-titulo" style={{ marginLeft: 0 }}>Antecedentes (marca los que apliquen)</div>
+      {GRUPOS_ANTECEDENTES.map((g) => (
+        <div key={g.titulo} style={{ marginBottom: 12 }}>
+          <div className="meta" style={{ marginBottom: 6, fontWeight: 600 }}>{g.titulo}</div>
+          <div className="chips">
+            {g.items.map((it) => (
+              <button
+                type="button"
+                key={it}
+                className={"chip" + (seleccion.has(it) ? " activa" : "")}
+                onClick={() => alternar(it)}
+              >
+                {it}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+
       {GRUPOS_FICHA.map((g) => (
         <div key={g.titulo}>
           <div className="seccion-titulo" style={{ marginLeft: 0 }}>{g.titulo}</div>

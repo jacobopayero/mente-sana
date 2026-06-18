@@ -108,6 +108,7 @@ function semilla() {
     plan_seguridad: { paciente_id: paciente.id, senales: "", calma: "", personas: "", motivos: "" },
     ficha_clinica: {
       paciente_id: paciente.id,
+      antecedentes: [],
       fecha_nacimiento: "",
       genero: "",
       contacto_emergencia: "",
