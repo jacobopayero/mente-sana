@@ -599,6 +599,75 @@ export async function medicamentosDePaciente(pacienteId) {
 }
 
 // ----------------------------------------------------------------------------
+//  MASTER / COLABORADORES  (el médico master autoriza el acceso a colaboradores)
+// ----------------------------------------------------------------------------
+export async function listarColaboradores() {
+  if (!estaConfigurado) return demo.listarColaboradores();
+  const user = await usuarioActual();
+  const { data, error } = await supabase
+    .from("autorizaciones")
+    .select(`colaborador:colaborador_id ( id, nombre, titulo, rol ), autorizado`)
+    .eq("master_id", user.id);
+  if (error) throw error;
+  return (data || []).map((a) => ({
+    id: a.colaborador?.id,
+    nombre: `${a.colaborador?.titulo ? a.colaborador.titulo + " " : ""}${a.colaborador?.nombre || ""}`,
+    rol: a.colaborador?.rol,
+    autorizado: a.autorizado,
+  }));
+}
+
+export async function autorizarColaborador(colaboradorId, autorizado) {
+  if (!estaConfigurado) return demo.autorizarColaborador(colaboradorId, autorizado);
+  const user = await usuarioActual();
+  const { error } = await supabase
+    .from("autorizaciones")
+    .upsert({ master_id: user.id, colaborador_id: colaboradorId, autorizado }, { onConflict: "master_id,colaborador_id" });
+  if (error) throw error;
+  return { colaboradorId, autorizado };
+}
+
+// ----------------------------------------------------------------------------
+//  RECETARIO  (el médico envía recetas al paciente)
+// ----------------------------------------------------------------------------
+const nombrePro = (p) => (p ? `${p.titulo ? p.titulo + " " : ""}${p.nombre}` : "");
+
+// Vista del paciente: sus recetas.
+export async function listarRecetas() {
+  if (!estaConfigurado) return demo.listarRecetas();
+  const { data, error } = await supabase
+    .from("recetas")
+    .select(`*, profesional:profesional_id ( nombre, titulo )`)
+    .order("fecha", { ascending: false });
+  if (error) throw error;
+  return (data || []).map((r) => ({ ...r, profesional_nombre: nombrePro(r.profesional) }));
+}
+
+// Vista del profesional: recetas de un paciente.
+export async function recetasDePaciente(pacienteId) {
+  if (!estaConfigurado) return demo.recetasDePaciente(pacienteId);
+  const { data, error } = await supabase
+    .from("recetas")
+    .select(`*, profesional:profesional_id ( nombre, titulo )`)
+    .eq("paciente_id", pacienteId)
+    .order("fecha", { ascending: false });
+  if (error) throw error;
+  return (data || []).map((r) => ({ ...r, profesional_nombre: nombrePro(r.profesional) }));
+}
+
+export async function crearReceta({ paciente_id, medicamento, dosis, frecuencia, indicaciones }) {
+  if (!estaConfigurado) return demo.crearReceta({ paciente_id, medicamento, dosis, frecuencia, indicaciones });
+  const user = await usuarioActual();
+  const { data, error } = await supabase
+    .from("recetas")
+    .insert({ paciente_id, profesional_id: user.id, medicamento, dosis, frecuencia, indicaciones })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// ----------------------------------------------------------------------------
 //  DIARIO (journaling)  ·  espacio privado del paciente
 // ----------------------------------------------------------------------------
 export async function listarDiario() {

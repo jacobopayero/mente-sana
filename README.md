@@ -76,6 +76,11 @@ decidir si el paciente las ve). En modo demo, usa el botón **"Entrar como profe
 - **Teleconsulta**: número asociado por profesional y registro de consultas. La **grabación**
   para evaluación/análisis requiere integración telefónica externa (p. ej. Twilio) y
   **consentimiento** explícito (`supabase/07_teleconsulta.sql`).
+- **Médico master / colaborador**: estructura en 3 áreas (paciente · médico master · médico
+  colaborador). El **master autoriza** a colaboradores a acceder a sus pacientes
+  (`supabase/12_master_colaborador.sql`).
+- **Recetario**: el médico envía recetas al paciente, que las consulta en "Mis recetas"
+  (`supabase/11_recetario.sql`).
 
 ---
 

@@ -47,9 +47,12 @@ import {
   medicamentosDePaciente,
   listarReferidos,
   crearReferido,
+  listarColaboradores,
+  autorizarColaborador,
 } from "./api";
 import { VistaExpediente } from "./Expediente.jsx";
 import { Teleconsulta } from "./Teleconsulta.jsx";
+import { Recetario } from "./Recetas.jsx";
 import { AnalisisIA } from "./Analisis.jsx";
 import { CamposFicha, camposConValor } from "./CamposFicha.jsx";
 import PieLegal from "./PieLegal.jsx";
@@ -141,7 +144,9 @@ function ListaPacientes({ perfil, salir, onAbrir }) {
       <header className="encabezado">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
-            <p className="saludo">{ROL_LABEL[perfil.rol] || "Profesional"}</p>
+            <p className="saludo">
+              {ROL_LABEL[perfil.rol] || "Profesional"} · {perfil.tipo === "colaborador" ? "Colaborador" : "Master"}
+            </p>
             <h1>{perfil.nombre}</h1>
           </div>
           <button style={{ padding: 8 }} onClick={salir} title="Cerrar sesión">
@@ -150,6 +155,8 @@ function ListaPacientes({ perfil, salir, onAbrir }) {
         </div>
       </header>
 
+      {perfil.tipo === "master" && <GestionColaboradores />}
+
       <div className="seccion-titulo">
         <Users size={15} /> Tus pacientes
       </div>
@@ -157,7 +164,11 @@ function ListaPacientes({ perfil, salir, onAbrir }) {
         {cargando ? (
           <p className="vacio">Cargando…</p>
         ) : pacientes.length === 0 ? (
-          <p className="vacio">Aún no tienes pacientes vinculados.</p>
+          <p className="vacio">
+            {perfil.tipo === "colaborador"
+              ? "Pendiente de autorización del médico master."
+              : "Aún no tienes pacientes vinculados."}
+          </p>
         ) : (
           pacientes.map((p) => {
             const iniciales = (p.nombre || "?")
@@ -195,6 +206,54 @@ function ListaPacientes({ perfil, salir, onAbrir }) {
       <Teleconsulta />
 
       <PieLegal />
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+//  Gestión de colaboradores — solo el médico master autoriza el acceso.
+function GestionColaboradores() {
+  const [cols, setCols] = useState([]);
+
+  async function cargar() {
+    setCols(await listarColaboradores());
+  }
+  useEffect(() => {
+    cargar().catch(console.error);
+  }, []);
+
+  async function alternar(c) {
+    await autorizarColaborador(c.id, !c.autorizado);
+    await cargar();
+  }
+
+  return (
+    <>
+      <div className="seccion-titulo">
+        <Users size={15} /> Médicos colaboradores
+      </div>
+      <div className="tarjeta">
+        <p className="sub" style={{ marginTop: 0 }}>Autoriza qué colaboradores pueden acceder a tus pacientes.</p>
+        {cols.length === 0 ? (
+          <p className="vacio" style={{ padding: 8 }}>Sin colaboradores.</p>
+        ) : (
+          cols.map((c) => (
+            <div className="item" key={c.id}>
+              <div className="cuerpo">
+                <div className="titulo">{c.nombre}</div>
+                <div className="meta">{c.autorizado ? "✓ Acceso autorizado" : "Sin autorización"}</div>
+              </div>
+              <button
+                className={c.autorizado ? "btn secundario" : "btn"}
+                style={{ width: "auto", padding: "8px 14px" }}
+                onClick={() => alternar(c)}
+              >
+                {c.autorizado ? "Quitar" : "Autorizar"}
+              </button>
+            </div>
+          ))
+        )}
+      </div>
     </>
   );
 }
@@ -468,6 +527,9 @@ function DetallePaciente({ paciente, onVolver, onExpediente }) {
           ))
         )}
       </div>
+
+      {/* Recetario */}
+      <Recetario paciente={paciente} />
 
       {/* Tareas */}
       <BloqueTareas paciente={paciente} tareas={tareas} alCambiar={cargar} />

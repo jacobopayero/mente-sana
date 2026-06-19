@@ -46,7 +46,8 @@ import Bienvenida, { onboardingAceptado } from "./Bienvenida.jsx";
 import { VistaPerfil } from "./Perfil.jsx";
 import PieLegal from "./PieLegal.jsx";
 import { VistaSuscripcion } from "./Suscripcion.jsx";
-import { Crown } from "lucide-react";
+import { VistaRecetas } from "./Recetas.jsx";
+import { Crown, FileText } from "lucide-react";
 import { Pill, ShieldCheck, Settings, BookHeart, Bell, User } from "lucide-react";
 import { pinActivo } from "./lib/pin";
 import { recordarCita, recordarTarea, recordarRegistroAnimo } from "./lib/calendario";
@@ -251,10 +252,10 @@ function PantallaAcceso({ alIngresar }) {
             Entrar como paciente (demo)
           </button>
           <button className="btn secundario" style={{ marginBottom: 10 }} onClick={() => entrarDemo("terapeuta")}>
-            Entrar como terapeuta (demo)
+            Entrar como médico master (demo)
           </button>
           <button className="btn secundario" style={{ marginBottom: 10 }} onClick={() => entrarDemo("psiquiatra")}>
-            Entrar como psiquiatra (demo)
+            Entrar como médico colaborador (demo)
           </button>
           <button className="btn secundario" onClick={() => entrarDemo("admin")}>
             Entrar como central / HQ (demo)
@@ -352,6 +353,7 @@ function AppPaciente({ perfil, alSalir }) {
         {vista === "diario" && <VistaDiario irA={setVista} />}
         {vista === "perfil" && <VistaPerfil irA={setVista} alActualizar={alSalir} />}
         {vista === "suscripcion" && <VistaSuscripcion irA={setVista} />}
+        {vista === "recetas" && <VistaRecetas irA={setVista} />}
       </div>
 
       {vista !== "apoyo" && <SOSBoton onClick={() => setVista("apoyo")} />}
@@ -455,6 +457,9 @@ function VistaInicio({ perfil, irA, salir }) {
         </button>
         <button className="btn fantasma" style={{ marginBottom: 10 }} onClick={() => irA("diario")}>
           <BookHeart size={18} /> Mi diario
+        </button>
+        <button className="btn fantasma" style={{ marginBottom: 10 }} onClick={() => irA("recetas")}>
+          <FileText size={18} /> Mis recetas
         </button>
         <button className="btn fantasma" style={{ marginBottom: 10 }} onClick={() => irA("medicacion")}>
           <Pill size={18} /> Medicación y recordatorios

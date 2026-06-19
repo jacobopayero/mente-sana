@@ -27,6 +27,8 @@ function semilla() {
     nombre_formal: "Cecilia Alexandra García H.",
     titulo: "Lic.",
     rol: "terapeuta",
+    principal: true, // médico principal del caso
+    tipo: "master", // master | colaborador
     perfiles_profesional: [
       {
         especialidad: "Familiar y de pareja · TCA",
@@ -42,6 +44,7 @@ function semilla() {
     nombre_formal: "Musa",
     titulo: "Dr.",
     rol: "psiquiatra",
+    tipo: "colaborador",
     perfiles_profesional: [
       { especialidad: "Especialista en TCA", credenciales: "Médico Psiquiatra", color_hex: "#6d6a9e" },
     ],
@@ -52,6 +55,7 @@ function semilla() {
     nombre_formal: "Rodríguez",
     titulo: "Dr.",
     rol: "psiquiatra",
+    tipo: "colaborador",
     perfiles_profesional: [
       { especialidad: "Especialista en TCA", credenciales: "Médico Psiquiatra", color_hex: "#7a6fa6" },
     ],
@@ -72,6 +76,8 @@ function semilla() {
     perfil: paciente,
     equipo: [terapeuta, psiquiatraMusa, psiquiatraRodriguez],
     central,
+    // Autorizaciones que el médico master concede a colaboradores.
+    autorizaciones: { [psiquiatraMusa.id]: true, [psiquiatraRodriguez.id]: false },
     numero_asociado: "",
     teleconsultas: [
       {
@@ -83,6 +89,18 @@ function semilla() {
         estado: "registrada",
         grabacion: false,
         nota: "Sesión individual de seguimiento.",
+      },
+    ],
+    recetas: [
+      {
+        id: id(),
+        paciente_id: paciente.id,
+        profesional_nombre: "Dr. Musa",
+        medicamento: "Sertralina",
+        dosis: "50 mg",
+        frecuencia: "1 vez al día",
+        indicaciones: "Con el desayuno. No suspender sin indicación.",
+        fecha: diasAtras(5),
       },
     ],
     registros_animo: [
@@ -227,6 +245,7 @@ export const demo = {
         nombre_formal: pro.nombre_formal,
         titulo: pro.titulo,
         rol: pro.rol, // 'terapeuta' o 'psiquiatra'
+        tipo: pro.tipo || "master", // master | colaborador
         email: db.sesion.user.email,
       };
     }
@@ -342,6 +361,12 @@ export const demo = {
   // ---- Panel del profesional ----------------------------------------------
   async misPacientes() {
     const db = leer();
+    // Colaborador sin autorización del master → no ve pacientes.
+    const profId = db.sesion?.profId;
+    const pro = db.equipo.find((p) => p.id === profId);
+    if (pro && pro.tipo === "colaborador" && db.autorizaciones?.[profId] !== true) {
+      return [];
+    }
     const ref = (db.referidos || []).find((r) => r.paciente_nombre === db.perfil.nombre);
     return [
       {
@@ -458,6 +483,57 @@ export const demo = {
   },
   async medicamentosDePaciente(pid) {
     return leer().medicamentos.filter((m) => m.paciente_id === pid && m.activo);
+  },
+
+  // ---- Master / colaboradores (autorización de acceso) ---------------------
+  async listarColaboradores() {
+    const db = leer();
+    return db.equipo
+      .filter((p) => p.tipo === "colaborador")
+      .map((p) => ({
+        id: p.id,
+        nombre: `${p.titulo ? p.titulo + " " : ""}${p.nombre}`,
+        rol: p.rol,
+        autorizado: db.autorizaciones?.[p.id] === true,
+      }));
+  },
+  async autorizarColaborador(colaboradorId, autorizado) {
+    actualizar((db) => {
+      if (!db.autorizaciones) db.autorizaciones = {};
+      db.autorizaciones[colaboradorId] = autorizado;
+    });
+    return { colaboradorId, autorizado };
+  },
+
+  // ---- Recetario (el médico envía recetas al paciente) ---------------------
+  async listarRecetas() {
+    // Vista del paciente: sus recetas.
+    return [...(leer().recetas || [])].sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
+  },
+  async recetasDePaciente(pid) {
+    return [...(leer().recetas || [])]
+      .filter((r) => r.paciente_id === pid)
+      .sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
+  },
+  async crearReceta({ paciente_id, medicamento, dosis, frecuencia, indicaciones }) {
+    let g;
+    actualizar((db) => {
+      const yo = db.equipo.find((p) => p.id === db.sesion?.profId);
+      const nombrePro = yo ? `${yo.titulo ? yo.titulo + " " : ""}${yo.nombre}` : "Profesional";
+      g = {
+        id: id(),
+        paciente_id: paciente_id || db.perfil.id,
+        profesional_nombre: nombrePro,
+        medicamento,
+        dosis,
+        frecuencia,
+        indicaciones,
+        fecha: hoy(),
+      };
+      if (!db.recetas) db.recetas = [];
+      db.recetas.push(g);
+    });
+    return g;
   },
 
   // ---- Teleconsulta (número asociado + registro de llamadas) ---------------
