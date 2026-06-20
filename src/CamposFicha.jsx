@@ -55,7 +55,6 @@ export const GRUPOS_FICHA = [
       { k: "infancia", label: "Aspectos de la niñez", tipo: "area", ph: "Contexto o eventos relevantes de la infancia" },
       { k: "antecedentes_familiares", label: "Antecedentes familiares (salud mental)", tipo: "area" },
       { k: "abuso", label: "Abuso o trauma (detalle)", tipo: "area", ph: "Opcional" },
-      { k: "consumo", label: "Consumo de sustancias (detalle)", tipo: "area", ph: "Opcional" },
       { k: "frecuencia_consumo", label: "Frecuencia de consumo", tipo: "select", opciones: ["No consume", "Ocasional", "Fin de semana", "Semanal", "Diario"] },
       { k: "actividad_fisica", label: "Actividad física / deporte", tipo: "area" },
     ],
@@ -86,9 +85,14 @@ export const GRUPOS_ANTECEDENTES = [
   { titulo: "Salud mental", items: ["Depresión", "Ansiedad", "TCA", "Autolesiones", "Ideación/intento suicida", "Trastorno bipolar", "TOC", "TEPT", "TDAH", "Fobias", "Trastorno límite"] },
   { titulo: "Conducta / control de impulsos", items: ["Cleptomanía", "Mitomanía", "Ludopatía", "Compras compulsivas", "Tricotilomanía", "Piromanía"] },
   { titulo: "Abuso / trauma", items: ["Abuso físico", "Abuso sexual", "Abuso emocional", "Negligencia", "Violencia intrafamiliar", "Acoso/bullying"] },
-  { titulo: "Consumo", items: ["Tabaco", "Alcohol", "Cafeína", "Cannabis", "Cocaína", "Medicamentos sin receta", "Otras sustancias"] },
   { titulo: "Médicos", items: ["Cirugías estéticas", "Otras cirugías", "Hospitalizaciones", "Embarazo actual", "Embarazos previos"] },
   { titulo: "Familiares", items: ["Salud mental en la familia", "TCA en la familia"] },
+];
+
+// Sustancias frecuentes (con opción de añadir otra y marcar uso combinado).
+export const SUSTANCIAS = [
+  "Tabaco", "Alcohol", "Cafeína", "Cannabis", "Cocaína", "Anfetaminas",
+  "Opioides", "Benzodiacepinas", "Alucinógenos", "Inhalantes", "Medicamentos sin receta",
 ];
 
 // Checklist de síntomas actuales.
@@ -112,6 +116,9 @@ export function camposConValor(ficha = {}) {
   }));
   if (ficha.sintomas && ficha.sintomas.length) {
     res.unshift({ label: "Síntomas actuales", valor: ficha.sintomas.join(", ") });
+  }
+  if (ficha.consumo_sustancias && ficha.consumo_sustancias.length) {
+    res.unshift({ label: "Consumo de sustancias", valor: ficha.consumo_sustancias.join(", ") + (ficha.consumo_combinado ? " (uso combinado)" : "") });
   }
   if (ficha.antecedentes && ficha.antecedentes.length) {
     res.unshift({ label: "Antecedentes", valor: ficha.antecedentes.join(", ") });
@@ -189,6 +196,58 @@ function SelectOtro({ valor, opciones, onChange, ph }) {
   );
 }
 
+// Consumo de sustancias: lista marcable + crear nueva + uso combinado.
+function ConsumoSustancias({ ficha, setF }) {
+  const sel = ficha.consumo_sustancias || [];
+  const [nueva, setNueva] = useState("");
+  const customs = sel.filter((s) => !SUSTANCIAS.includes(s));
+  const todos = [...SUSTANCIAS, ...customs];
+
+  function agregar() {
+    const v = nueva.trim();
+    if (v && !sel.includes(v)) setF("consumo_sustancias", [...sel, v]);
+    setNueva("");
+  }
+
+  return (
+    <>
+      <div className="seccion-titulo" style={{ marginLeft: 0 }}>Consumo de sustancias</div>
+      <div className="chips" style={{ marginBottom: 10 }}>
+        {todos.map((it) => (
+          <button
+            type="button"
+            key={it}
+            className={"chip" + (sel.includes(it) ? " activa" : "")}
+            onClick={() => setF("consumo_sustancias", toggleEnLista(sel, it))}
+          >
+            {it}
+          </button>
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+        <input
+          value={nueva}
+          onChange={(e) => setNueva(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); agregar(); } }}
+          placeholder="Otra sustancia…"
+        />
+        <button type="button" className="btn secundario" style={{ width: "auto", padding: "10px 14px" }} onClick={agregar}>
+          Añadir
+        </button>
+      </div>
+      <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.9rem", marginBottom: 6 }}>
+        <input
+          type="checkbox"
+          checked={!!ficha.consumo_combinado}
+          onChange={(e) => setF("consumo_combinado", e.target.checked)}
+          style={{ width: 18, height: 18, accentColor: "var(--salvia)" }}
+        />
+        Uso combinado (varias sustancias)
+      </label>
+    </>
+  );
+}
+
 // Formulario reutilizable de la ficha (paciente o profesional).
 export function CamposFicha({ ficha, setF }) {
   return (
@@ -206,6 +265,8 @@ export function CamposFicha({ ficha, setF }) {
         valores={ficha.sintomas}
         onToggle={(it) => setF("sintomas", toggleEnLista(ficha.sintomas, it))}
       />
+
+      <ConsumoSustancias ficha={ficha} setF={setF} />
 
       {GRUPOS_FICHA.map((g) => (
         <div key={g.titulo}>

@@ -167,7 +167,7 @@ function semilla() {
     },
     ficha_clinica: {
       paciente_id: paciente.id,
-      antecedentes: ["Ansiedad", "Depresión", "Alcohol", "Salud mental en la familia"],
+      antecedentes: ["Ansiedad", "Depresión", "Salud mental en la familia"],
       sintomas: ["Insomnio", "Ansiedad/pánico", "Tristeza persistente", "Falta de concentración", "Irritabilidad"],
       sistema_familiar: [
         { nombre: "Rosa", parentesco: "Madre", edad: "58", nota: "Muy cercana; sobreprotectora." },
@@ -187,7 +187,8 @@ function semilla() {
       infancia: "Infancia estable con alta exigencia académica. Padre ausente por trabajo.",
       antecedentes_familiares: "Madre con depresión; abuelo materno con alcoholismo.",
       abuso: "Niega abuso. Episodio de bullying en secundaria.",
-      consumo: "Alcohol social los fines de semana; sin otras sustancias.",
+      consumo_sustancias: ["Alcohol", "Cafeína"],
+      consumo_combinado: false,
       frecuencia_consumo: "Fin de semana",
       actividad_fisica: "Camina ocasionalmente; sin rutina fija.",
       condiciones: "Ninguna relevante.",
