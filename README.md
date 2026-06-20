@@ -1,14 +1,18 @@
 # Aura
 
-App de acompañamiento para pacientes en terapia, con dirección clínica especializada en TCA.
-Proyecto **Vite + React + Supabase**: cuentas, roles, persistencia real y una interfaz serena,
-instalable como PWA.
+Plataforma de acompañamiento en **salud mental** para profesionales y sus pacientes, a lo
+largo de los distintos niveles y tipos de terapia. Proyecto **Vite + React + Supabase**:
+cuentas, roles, persistencia real e interfaz serena, instalable como PWA.
 
-> **Salvaguardas de diseño (no negociables).** La app no registra ni muestra calorías,
-> peso, IMC ni métricas corporales; no comenta apariencia; no genera planes de
-> alimentación. El sueño usa solo calidad cualitativa y un rango de descanso percibido.
-> El reloj, en su fase, importará únicamente sueño. Estas reglas viven también dentro del
-> esquema SQL y de la capa de datos.
+> **Alcance.** Aura es una herramienta para **profesionales de la salud mental** en general.
+> La **primera prueba** es con la Lic. Alexandra García (terapeuta, especialista en TCA); el
+> diseño escala a cualquier especialidad (psicología clínica, psiquiatría, terapia de pareja,
+> familiar, etc.).
+
+> **Principios de diseño (especialmente críticos en TCA).** Por defecto la app no registra ni
+> muestra calorías, peso, IMC ni métricas corporales; no comenta apariencia; no genera planes
+> de alimentación. El sueño usa solo calidad cualitativa. Estas salvaguardas protegen a la
+> persona y pueden ajustarse por especialidad junto a la dirección clínica.
 
 ---
 

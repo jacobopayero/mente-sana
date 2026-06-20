@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "App de acompañamiento para pacientes en terapia (dirección clínica en TCA).",
+  "description": "Aura — plataforma de acompañamiento en salud mental para profesionales y sus pacientes.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
