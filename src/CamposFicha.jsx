@@ -89,10 +89,17 @@ export const GRUPOS_ANTECEDENTES = [
   { titulo: "Familiares", items: ["Salud mental en la familia", "TCA en la familia"] },
 ];
 
-// Sustancias frecuentes (con opción de añadir otra y marcar uso combinado).
+// Sustancias más comunes a nivel mundial (con opción de añadir otra y marcar
+// uso combinado). Lista amplia; el clínico marca las que apliquen.
 export const SUSTANCIAS = [
-  "Tabaco", "Alcohol", "Cafeína", "Cannabis", "Cocaína", "Anfetaminas",
-  "Opioides", "Benzodiacepinas", "Alucinógenos", "Inhalantes", "Medicamentos sin receta",
+  "Tabaco / Nicotina", "Alcohol", "Cafeína", "Cannabis (marihuana)", "Hachís",
+  "Cocaína", "Crack", "Anfetaminas", "Metanfetamina", "MDMA / Éxtasis",
+  "Heroína", "Morfina", "Codeína", "Fentanilo", "Tramadol", "Metadona",
+  "Oxicodona", "Benzodiacepinas", "Barbitúricos", "Sedantes / hipnóticos",
+  "LSD", "Hongos (psilocibina)", "Ketamina", "PCP (fenciclidina)",
+  "DMT / Ayahuasca", "Mescalina / Peyote", "GHB", "Poppers (nitritos)",
+  "Inhalantes / solventes", "Kratom", "Salvia divinorum", "Esteroides anabólicos",
+  "Bebidas energéticas", "Medicamentos sin receta",
 ];
 
 // Checklist de síntomas actuales.
