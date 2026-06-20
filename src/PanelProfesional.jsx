@@ -52,6 +52,10 @@ import {
   listarAsistentes,
   autorizarAsistente,
   permitirSellar,
+  informeColaboradores,
+  setPrecioConsulta,
+  colaboradoresParaPago,
+  registrarPago,
 } from "./api";
 import { VistaExpediente } from "./Expediente.jsx";
 import { Teleconsulta } from "./Teleconsulta.jsx";
@@ -161,6 +165,7 @@ function ListaPacientes({ perfil, salir, onAbrir }) {
 
       {perfil.tipo === "master" && <GestionColaboradores />}
       {perfil.tipo === "master" && <GestionAsistentes />}
+      {perfil.tipo === "master" && <Contabilidad />}
 
       <div className="seccion-titulo">
         <Users size={15} /> Tus pacientes
@@ -257,6 +262,118 @@ function GestionColaboradores() {
               </button>
             </div>
           ))
+        )}
+      </div>
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+//  Contabilidad — informe de colaboradores (referidos, precio/consulta, total).
+//  Lo puede llenar la secretaria al cobrar o el propio terapeuta.
+function Contabilidad() {
+  const [filas, setFilas] = useState([]);
+  const [cols, setCols] = useState([]);
+  const [form, setForm] = useState(false);
+  const [profId, setProfId] = useState("");
+  const [paciente, setPaciente] = useState("");
+  const [monto, setMonto] = useState("");
+
+  async function cargar() {
+    setFilas(await informeColaboradores());
+    const c = await colaboradoresParaPago();
+    setCols(c);
+    if (c[0] && !profId) {
+      setProfId(c[0].id);
+      setMonto(String(c[0].precio || ""));
+    }
+  }
+  useEffect(() => {
+    cargar().catch(console.error);
+  }, []);
+
+  async function guardarPrecio(id, valor) {
+    await setPrecioConsulta(id, valor);
+    await cargar();
+  }
+  async function pagar(e) {
+    e.preventDefault();
+    if (!profId) return;
+    await registrarPago({ profesional_id: profId, paciente_nombre: paciente.trim(), monto });
+    setPaciente("");
+    setForm(false);
+    await cargar();
+  }
+
+  const totalGeneral = filas.reduce((a, b) => a + (b.total || 0), 0);
+
+  return (
+    <>
+      <div className="seccion-titulo">
+        <FileText size={15} /> Contabilidad · colaboradores
+      </div>
+      <div className="tarjeta">
+        {filas.length === 0 ? (
+          <p className="vacio" style={{ padding: 8 }}>Sin colaboradores.</p>
+        ) : (
+          filas.map((f) => (
+            <div key={f.id} className="item" style={{ display: "block" }}>
+              <div className="titulo">{f.nombre}</div>
+              <div className="meta">
+                {f.referidos} referido(s) · {f.consultas} consulta(s) · Total: US${f.total}
+              </div>
+              <div className="campo" style={{ marginTop: 6, marginBottom: 0 }}>
+                <label>Precio por consulta (US$)</label>
+                <input
+                  type="number"
+                  defaultValue={f.precio_consulta}
+                  onBlur={(e) => guardarPrecio(f.id, e.target.value)}
+                  style={{ maxWidth: 140 }}
+                />
+              </div>
+            </div>
+          ))
+        )}
+        {filas.length > 0 && (
+          <p style={{ fontWeight: 700, color: "var(--salvia-osc)", marginTop: 10 }}>
+            Total general: US${totalGeneral}
+          </p>
+        )}
+
+        {!form ? (
+          <button className="btn fantasma" style={{ marginTop: 8 }} onClick={() => setForm(true)}>
+            <Plus size={16} /> Registrar pago / consulta
+          </button>
+        ) : (
+          <form onSubmit={pagar} style={{ marginTop: 8 }}>
+            <div className="campo">
+              <label>Colaborador</label>
+              <select
+                value={profId}
+                onChange={(e) => {
+                  setProfId(e.target.value);
+                  const c = cols.find((x) => x.id === e.target.value);
+                  setMonto(String(c?.precio || ""));
+                }}
+              >
+                {cols.map((c) => (
+                  <option key={c.id} value={c.id}>{c.nombre}</option>
+                ))}
+              </select>
+            </div>
+            <div className="campo">
+              <label>Paciente</label>
+              <input value={paciente} onChange={(e) => setPaciente(e.target.value)} placeholder="Nombre del paciente" />
+            </div>
+            <div className="campo">
+              <label>Monto (US$)</label>
+              <input type="number" value={monto} onChange={(e) => setMonto(e.target.value)} />
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="btn" type="submit">Registrar</button>
+              <button className="btn secundario" type="button" onClick={() => setForm(false)}>Cancelar</button>
+            </div>
+          </form>
         )}
       </div>
     </>

@@ -80,6 +80,11 @@ function semilla() {
     autorizaciones: { [psiquiatra.id]: true },
     // Permisos del/los asistente(s): acceso y si puede "sellar" indicaciones.
     asistentes_perm: { [asistente.id]: { autorizado: true, sellar: false } },
+    // Contabilidad: tarifa por consulta del colaborador y pagos registrados.
+    tarifas: { [psiquiatra.id]: 25 },
+    pagos: [
+      { id: id(), profesional_id: psiquiatra.id, profesional_nombre: "Dra. Cindy Rodríguez", paciente_nombre: paciente.nombre, monto: 25, fecha: diasAtras(5) },
+    ],
     numero_asociado: "",
     teleconsultas: [
       {
@@ -513,6 +518,57 @@ export const demo = {
       db.autorizaciones[colaboradorId] = autorizado;
     });
     return { colaboradorId, autorizado };
+  },
+
+  // ---- Contabilidad / informe de colaboradores -----------------------------
+  async informeColaboradores() {
+    const db = leer();
+    const refer = (proId) => (db.referidos || []).filter((r) => r.referido_por_id === proId).length;
+    return db.equipo
+      .filter((p) => p.tipo === "colaborador")
+      .map((p) => {
+        const pagos = (db.pagos || []).filter((x) => x.profesional_id === p.id);
+        return {
+          id: p.id,
+          nombre: `${p.titulo ? p.titulo + " " : ""}${p.nombre}`,
+          referidos: refer(p.id),
+          precio_consulta: db.tarifas?.[p.id] ?? 0,
+          consultas: pagos.length,
+          total: pagos.reduce((a, b) => a + (Number(b.monto) || 0), 0),
+        };
+      });
+  },
+  async setPrecioConsulta(colaboradorId, precio) {
+    actualizar((db) => {
+      if (!db.tarifas) db.tarifas = {};
+      db.tarifas[colaboradorId] = Number(precio) || 0;
+    });
+  },
+  async colaboradoresParaPago() {
+    const db = leer();
+    return db.equipo
+      .filter((p) => p.tipo === "colaborador")
+      .map((p) => ({ id: p.id, nombre: `${p.titulo ? p.titulo + " " : ""}${p.nombre}`, precio: db.tarifas?.[p.id] ?? 0 }));
+  },
+  async listarPagos() {
+    return [...(leer().pagos || [])].sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
+  },
+  async registrarPago({ profesional_id, paciente_nombre, monto }) {
+    let g;
+    actualizar((db) => {
+      const pro = db.equipo.find((p) => p.id === profesional_id);
+      g = {
+        id: id(),
+        profesional_id,
+        profesional_nombre: pro ? `${pro.titulo ? pro.titulo + " " : ""}${pro.nombre}` : "",
+        paciente_nombre,
+        monto: Number(monto) || 0,
+        fecha: hoy(),
+      };
+      if (!db.pagos) db.pagos = [];
+      db.pagos.push(g);
+    });
+    return g;
   },
 
   // ---- Asistente / secretaria (acceso limitado) ----------------------------

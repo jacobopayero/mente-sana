@@ -16,6 +16,8 @@ import {
   cancelarCita,
   recetasDePaciente,
   sellarReceta,
+  colaboradoresParaPago,
+  registrarPago,
 } from "./api";
 import { recordarCita } from "./lib/calendario";
 import PieLegal from "./PieLegal.jsx";
@@ -114,6 +116,60 @@ export default function PanelAsistente({ perfil, alSalir }) {
         <PieLegal />
       </div>
     </div>
+  );
+}
+
+function PagoAsistente({ paciente }) {
+  const [cols, setCols] = useState([]);
+  const [profId, setProfId] = useState("");
+  const [monto, setMonto] = useState("");
+  const [ok, setOk] = useState(false);
+
+  useEffect(() => {
+    colaboradoresParaPago().then((c) => {
+      setCols(c);
+      if (c[0]) {
+        setProfId(c[0].id);
+        setMonto(String(c[0].precio || ""));
+      }
+    }).catch(console.error);
+  }, []);
+
+  async function pagar(e) {
+    e.preventDefault();
+    if (!profId) return;
+    await registrarPago({ profesional_id: profId, paciente_nombre: paciente.nombre, monto });
+    setOk(true);
+    setTimeout(() => setOk(false), 2500);
+  }
+
+  return (
+    <>
+      <div className="seccion-titulo">Registrar pago</div>
+      <form className="tarjeta" onSubmit={pagar}>
+        <p className="sub" style={{ marginTop: 0 }}>Al momento de cobrar la consulta.</p>
+        <div className="campo">
+          <label>Profesional</label>
+          <select
+            value={profId}
+            onChange={(e) => {
+              setProfId(e.target.value);
+              const c = cols.find((x) => x.id === e.target.value);
+              setMonto(String(c?.precio || ""));
+            }}
+          >
+            {cols.map((c) => (
+              <option key={c.id} value={c.id}>{c.nombre}</option>
+            ))}
+          </select>
+        </div>
+        <div className="campo">
+          <label>Monto (US$)</label>
+          <input type="number" value={monto} onChange={(e) => setMonto(e.target.value)} />
+        </div>
+        <button className="btn" type="submit">{ok ? "Registrado 🌿" : "Registrar pago"}</button>
+      </form>
+    </>
   );
 }
 
@@ -232,6 +288,9 @@ function DetalleAsistente({ paciente, permiso, onVolver }) {
           ))
         )}
       </div>
+
+      {/* Registrar pago (contabilidad del médico) */}
+      <PagoAsistente paciente={paciente} />
 
       {/* Sellar indicaciones (solo si el médico lo permitió) */}
       {permiso.sellar && (

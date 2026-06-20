@@ -628,6 +628,39 @@ export async function autorizarColaborador(colaboradorId, autorizado) {
 }
 
 // ----------------------------------------------------------------------------
+//  CONTABILIDAD / INFORME DE COLABORADORES  (para el médico master)
+//  Pacientes referidos, precio por consulta y total. Lo puede llenar la
+//  secretaria al cobrar o el propio terapeuta.
+// ----------------------------------------------------------------------------
+export async function informeColaboradores() {
+  if (!estaConfigurado) return demo.informeColaboradores();
+  return []; // requiere tablas de tarifas/pagos (ver 14_contabilidad.sql)
+}
+export async function setPrecioConsulta(colaboradorId, precio) {
+  if (!estaConfigurado) return demo.setPrecioConsulta(colaboradorId, precio);
+}
+export async function colaboradoresParaPago() {
+  if (!estaConfigurado) return demo.colaboradoresParaPago();
+  return [];
+}
+export async function listarPagos() {
+  if (!estaConfigurado) return demo.listarPagos();
+  const { data, error } = await supabase.from("pagos").select("*").order("fecha", { ascending: false });
+  if (error) throw error;
+  return data;
+}
+export async function registrarPago({ profesional_id, paciente_nombre, monto }) {
+  if (!estaConfigurado) return demo.registrarPago({ profesional_id, paciente_nombre, monto });
+  const { data, error } = await supabase
+    .from("pagos")
+    .insert({ profesional_id, paciente_nombre, monto })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// ----------------------------------------------------------------------------
 //  ASISTENTE / SECRETARIA  (acceso limitado, autorizado por el médico)
 //  Por defecto solo ve datos de CONTACTO del paciente y gestiona citas. El
 //  médico puede además permitirle "sellar" indicaciones.
