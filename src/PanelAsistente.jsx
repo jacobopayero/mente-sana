@@ -6,7 +6,7 @@
 //  NO ve la información clínica (ánimo, ficha, notas, etc.).
 // ============================================================================
 import { useEffect, useState } from "react";
-import { LogOut, Phone, Mail, CalendarDays, Plus, Trash2, Video, MapPin, Stamp } from "lucide-react";
+import { LogOut, Phone, Mail, CalendarDays, Plus, Trash2, Video, MapPin, Stamp, MessageCircle, CalendarPlus } from "lucide-react";
 import {
   cerrarSesion,
   contactosPacientes,
@@ -17,6 +17,7 @@ import {
   recetasDePaciente,
   sellarReceta,
 } from "./api";
+import { recordarCita } from "./lib/calendario";
 import PieLegal from "./PieLegal.jsx";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
@@ -25,6 +26,19 @@ const fecha = (iso) => {
   const d = new Date(String(iso).slice(0, 10) + "T00:00:00");
   return d.toLocaleDateString("es-DO", { weekday: "short", day: "numeric", month: "short" });
 };
+
+// Número a formato internacional para WhatsApp (RD: anteponer 1 si son 10 dígitos).
+function waNumero(tel) {
+  let n = (tel || "").replace(/\D/g, "");
+  if (n.length === 10) n = "1" + n;
+  return n;
+}
+function enlaceWhatsApp(tel, mensaje) {
+  return `https://wa.me/${waNumero(tel)}?text=${encodeURIComponent(mensaje)}`;
+}
+function mensajeCita(nombre, c) {
+  return `Hola ${nombre}, le confirmamos su cita el ${fecha(c.fecha)} a las ${(c.hora || "").slice(0, 5)} (${c.modalidad}). — Aura`;
+}
 
 export default function PanelAsistente({ perfil, alSalir }) {
   const [permiso, setPermiso] = useState({ autorizado: false, sellar: false });
@@ -153,6 +167,16 @@ function DetalleAsistente({ paciente, permiso, onVolver }) {
           <div className="icono-redondo"><Phone size={18} /></div>
           <div className="cuerpo"><div className="titulo">{paciente.telefono || "Sin teléfono"}</div><div className="meta">Llamar</div></div>
         </a>
+        <a
+          className="item"
+          href={enlaceWhatsApp(paciente.telefono, `Hola ${paciente.nombre}, le escribimos de Aura.`)}
+          target="_blank"
+          rel="noreferrer"
+          style={{ textDecoration: "none" }}
+        >
+          <div className="icono-redondo" style={{ color: "#25D366" }}><MessageCircle size={18} /></div>
+          <div className="cuerpo"><div className="titulo">WhatsApp</div><div className="meta">Escribir al paciente</div></div>
+        </a>
         <a className="item" href={`mailto:${paciente.email}`} style={{ textDecoration: "none" }}>
           <div className="icono-redondo"><Mail size={18} /></div>
           <div className="cuerpo"><div className="titulo">{paciente.email}</div><div className="meta">Correo</div></div>
@@ -188,6 +212,20 @@ function DetalleAsistente({ paciente, permiso, onVolver }) {
               <div className="cuerpo">
                 <div className="titulo">{fecha(c.fecha)} · {(c.hora || "").slice(0, 5)}</div>
                 <div className="meta">{c.modalidad} · {c.tipo}</div>
+                <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+                  <a
+                    className="btn fantasma"
+                    style={{ width: "auto", padding: "6px 12px", textDecoration: "none" }}
+                    href={enlaceWhatsApp(paciente.telefono, mensajeCita(paciente.nombre, c))}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <MessageCircle size={15} /> WhatsApp
+                  </a>
+                  <button className="btn fantasma" style={{ width: "auto", padding: "6px 12px" }} onClick={() => recordarCita(c)}>
+                    <CalendarPlus size={15} /> Calendario
+                  </button>
+                </div>
               </div>
               <button onClick={() => cancelar(c.id)} title="Cancelar" style={{ color: "var(--tinta-suave)" }}><Trash2 size={18} /></button>
             </div>
