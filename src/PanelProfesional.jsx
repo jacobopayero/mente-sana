@@ -49,6 +49,9 @@ import {
   crearReferido,
   listarColaboradores,
   autorizarColaborador,
+  listarAsistentes,
+  autorizarAsistente,
+  permitirSellar,
 } from "./api";
 import { VistaExpediente } from "./Expediente.jsx";
 import { Teleconsulta } from "./Teleconsulta.jsx";
@@ -157,6 +160,7 @@ function ListaPacientes({ perfil, salir, onAbrir }) {
       </header>
 
       {perfil.tipo === "master" && <GestionColaboradores />}
+      {perfil.tipo === "master" && <GestionAsistentes />}
 
       <div className="seccion-titulo">
         <Users size={15} /> Tus pacientes
@@ -251,6 +255,74 @@ function GestionColaboradores() {
               >
                 {c.autorizado ? "Quitar" : "Autorizar"}
               </button>
+            </div>
+          ))
+        )}
+      </div>
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+//  Gestión de asistentes/secretaria — el médico autoriza acceso (solo contacto
+//  y citas) y, opcionalmente, permiso para "sellar" indicaciones.
+function GestionAsistentes() {
+  const [lista, setLista] = useState([]);
+
+  async function cargar() {
+    setLista(await listarAsistentes());
+  }
+  useEffect(() => {
+    cargar().catch(console.error);
+  }, []);
+
+  async function toggleAcceso(a) {
+    await autorizarAsistente(a.id, !a.autorizado);
+    await cargar();
+  }
+  async function toggleSellar(a) {
+    await permitirSellar(a.id, !a.sellar);
+    await cargar();
+  }
+
+  return (
+    <>
+      <div className="seccion-titulo">
+        <Users size={15} /> Asistente / secretaria
+      </div>
+      <div className="tarjeta">
+        <p className="sub" style={{ marginTop: 0 }}>
+          El asistente solo ve datos de contacto y citas (no la información clínica).
+        </p>
+        {lista.length === 0 ? (
+          <p className="vacio" style={{ padding: 8 }}>Sin asistentes.</p>
+        ) : (
+          lista.map((a) => (
+            <div key={a.id} style={{ borderBottom: "1px solid var(--crema-osc)", paddingBottom: 10, marginBottom: 10 }}>
+              <div className="item" style={{ borderBottom: "none", padding: "6px 0" }}>
+                <div className="cuerpo">
+                  <div className="titulo">{a.nombre}</div>
+                  <div className="meta">{a.autorizado ? "✓ Acceso autorizado" : "Sin autorización"}</div>
+                </div>
+                <button
+                  className={a.autorizado ? "btn secundario" : "btn"}
+                  style={{ width: "auto", padding: "8px 14px" }}
+                  onClick={() => toggleAcceso(a)}
+                >
+                  {a.autorizado ? "Quitar" : "Autorizar"}
+                </button>
+              </div>
+              {a.autorizado && (
+                <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.9rem" }}>
+                  <input
+                    type="checkbox"
+                    checked={a.sellar}
+                    onChange={() => toggleSellar(a)}
+                    style={{ width: 18, height: 18, accentColor: "var(--salvia)" }}
+                  />
+                  Permitir sellar indicaciones
+                </label>
+              )}
             </div>
           ))
         )}

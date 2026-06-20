@@ -20,7 +20,7 @@ const id = () =>
 
 // ---- Datos de ejemplo (semilla) -------------------------------------------
 function semilla() {
-  const paciente = { id: "demo-paciente", email: "paciente@demo", nombre: "Tú", rol: "paciente", foto_url: "" };
+  const paciente = { id: "demo-paciente", email: "paciente@demo", nombre: "Tú", rol: "paciente", foto_url: "", telefono: "809-555-0123" };
   const terapeuta = {
     id: "demo-terapeuta",
     nombre: "Alexandra García",
@@ -71,13 +71,26 @@ function semilla() {
     email: "central@demo",
   };
 
+  // Asistente / secretaria del médico (acceso limitado).
+  const asistente = {
+    id: "demo-asistente",
+    nombre: "Carla",
+    nombre_formal: "Carla (Asistente)",
+    titulo: "",
+    rol: "asistente",
+    email: "asistente@demo",
+  };
+
   return {
     sesion: null, // se llena al iniciar sesión
     perfil: paciente,
     equipo: [terapeuta, psiquiatraMusa, psiquiatraRodriguez],
     central,
+    asistente,
     // Autorizaciones que el médico master concede a colaboradores.
     autorizaciones: { [psiquiatraMusa.id]: true, [psiquiatraRodriguez.id]: false },
+    // Permisos del/los asistente(s): acceso y si puede "sellar" indicaciones.
+    asistentes_perm: { [asistente.id]: { autorizado: true, sellar: false } },
     numero_asociado: "",
     teleconsultas: [
       {
@@ -101,6 +114,7 @@ function semilla() {
         frecuencia: "1 vez al día",
         indicaciones: "Con el desayuno. No suspender sin indicación.",
         fecha: diasAtras(5),
+        sellada: false,
       },
     ],
     registros_animo: [
@@ -214,6 +228,10 @@ export const demo = {
         db.sesion = { user: { id: db.central.id, email: db.central.email }, rol: "admin", profId: db.central.id };
         return;
       }
+      if (rol === "asistente") {
+        db.sesion = { user: { id: db.asistente.id, email: db.asistente.email }, rol: "asistente", profId: db.asistente.id };
+        return;
+      }
       const buscado = rol === "profesional" ? "terapeuta" : rol;
       const pro = db.equipo.find((p) => p.rol === buscado);
       if (pro) {
@@ -236,6 +254,9 @@ export const demo = {
     if (!db.sesion) return null;
     if (db.sesion.rol === "admin") {
       return { ...db.central };
+    }
+    if (db.sesion.rol === "asistente") {
+      return { ...db.asistente };
     }
     if (db.sesion.rol === "profesional") {
       const pro = db.equipo.find((p) => p.id === db.sesion.profId) || db.equipo[0];
@@ -503,6 +524,61 @@ export const demo = {
       db.autorizaciones[colaboradorId] = autorizado;
     });
     return { colaboradorId, autorizado };
+  },
+
+  // ---- Asistente / secretaria (acceso limitado) ----------------------------
+  async listarAsistentes() {
+    const db = leer();
+    const perm = db.asistentes_perm || {};
+    const a = db.asistente;
+    return a
+      ? [{ id: a.id, nombre: a.nombre, autorizado: perm[a.id]?.autorizado === true, sellar: perm[a.id]?.sellar === true }]
+      : [];
+  },
+  async autorizarAsistente(asistenteId, autorizado) {
+    actualizar((db) => {
+      if (!db.asistentes_perm) db.asistentes_perm = {};
+      db.asistentes_perm[asistenteId] = { ...(db.asistentes_perm[asistenteId] || {}), autorizado };
+    });
+  },
+  async permitirSellar(asistenteId, sellar) {
+    actualizar((db) => {
+      if (!db.asistentes_perm) db.asistentes_perm = {};
+      db.asistentes_perm[asistenteId] = { ...(db.asistentes_perm[asistenteId] || {}), sellar };
+    });
+  },
+  async miPermisoAsistente() {
+    const db = leer();
+    const id = db.sesion?.profId;
+    return db.asistentes_perm?.[id] || { autorizado: false, sellar: false };
+  },
+  // Solo datos de contacto del/los paciente(s).
+  async contactosPacientes() {
+    const db = leer();
+    return [{ id: db.perfil.id, nombre: db.perfil.nombre, email: db.perfil.email, telefono: db.perfil.telefono || "" }];
+  },
+  async crearCitaPara({ paciente_id, profesional_id, fecha, hora, modalidad, tipo }) {
+    let g;
+    actualizar((db) => {
+      g = {
+        id: id(),
+        paciente_id: paciente_id || db.perfil.id,
+        profesional_id: profesional_id || db.equipo[0]?.id,
+        fecha,
+        hora,
+        modalidad,
+        tipo,
+        estado: "agendada",
+      };
+      db.citas.push(g);
+    });
+    return g;
+  },
+  async sellarReceta(recetaId) {
+    actualizar((db) => {
+      const r = (db.recetas || []).find((x) => x.id === recetaId);
+      if (r) r.sellada = true;
+    });
   },
 
   // ---- Recetario (el médico envía recetas al paciente) ---------------------

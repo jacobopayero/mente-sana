@@ -81,6 +81,11 @@ decidir si el paciente las ve). En modo demo, usa el botón **"Entrar como profe
   (`supabase/12_master_colaborador.sql`).
 - **Recetario**: el médico envía recetas al paciente, que las consulta en "Mis recetas"
   (`supabase/11_recetario.sql`).
+- **Asistente / secretaria**: el médico autoriza a un asistente con acceso limitado
+  (solo **datos de contacto** y **gestión de citas**, sin información clínica) y,
+  opcionalmente, permiso para **sellar indicaciones** (`supabase/13_asistente.sql`).
+- **Conexiones (uso clínico)**: el médico conecta relojes/apps (Apple Watch, Garmin, Fitbit,
+  Samsung, Oura, Whoop…); importa **solo la calidad del sueño**. El paciente no la ve.
 
 ---
 

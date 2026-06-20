@@ -628,6 +628,50 @@ export async function autorizarColaborador(colaboradorId, autorizado) {
 }
 
 // ----------------------------------------------------------------------------
+//  ASISTENTE / SECRETARIA  (acceso limitado, autorizado por el médico)
+//  Por defecto solo ve datos de CONTACTO del paciente y gestiona citas. El
+//  médico puede además permitirle "sellar" indicaciones.
+// ----------------------------------------------------------------------------
+export async function listarAsistentes() {
+  if (!estaConfigurado) return demo.listarAsistentes();
+  return []; // requiere tabla de asistentes/permisos (ver 13_asistente.sql)
+}
+export async function autorizarAsistente(asistenteId, autorizado) {
+  if (!estaConfigurado) return demo.autorizarAsistente(asistenteId, autorizado);
+}
+export async function permitirSellar(asistenteId, sellar) {
+  if (!estaConfigurado) return demo.permitirSellar(asistenteId, sellar);
+}
+export async function miPermisoAsistente() {
+  if (!estaConfigurado) return demo.miPermisoAsistente();
+  return { autorizado: false, sellar: false };
+}
+export async function contactosPacientes() {
+  if (!estaConfigurado) return demo.contactosPacientes();
+  const { data, error } = await supabase
+    .from("vinculos_cuidado")
+    .select(`paciente:paciente_id ( id, nombre, email, telefono )`)
+    .eq("activo", true);
+  if (error) throw error;
+  return (data || []).map((v) => v.paciente);
+}
+export async function crearCitaPara({ paciente_id, profesional_id, fecha, hora, modalidad, tipo }) {
+  if (!estaConfigurado) return demo.crearCitaPara({ paciente_id, profesional_id, fecha, hora, modalidad, tipo });
+  const { data, error } = await supabase
+    .from("citas")
+    .insert({ paciente_id, profesional_id, fecha, hora, modalidad, tipo })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+export async function sellarReceta(recetaId) {
+  if (!estaConfigurado) return demo.sellarReceta(recetaId);
+  const { error } = await supabase.from("recetas").update({ sellada: true }).eq("id", recetaId);
+  if (error) throw error;
+}
+
+// ----------------------------------------------------------------------------
 //  RECETARIO  (el médico envía recetas al paciente)
 // ----------------------------------------------------------------------------
 const nombrePro = (p) => (p ? `${p.titulo ? p.titulo + " " : ""}${p.nombre}` : "");
