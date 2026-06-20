@@ -53,6 +53,7 @@ import {
 import { VistaExpediente } from "./Expediente.jsx";
 import { Teleconsulta } from "./Teleconsulta.jsx";
 import { Recetario } from "./Recetas.jsx";
+import { Conexiones } from "./Conexiones.jsx";
 import { AnalisisIA } from "./Analisis.jsx";
 import { CamposFicha, camposConValor } from "./CamposFicha.jsx";
 import PieLegal from "./PieLegal.jsx";
@@ -527,6 +528,9 @@ function DetallePaciente({ paciente, onVolver, onExpediente }) {
           ))
         )}
       </div>
+
+      {/* Conexiones (reloj/apps) — uso clínico, el paciente no las ve */}
+      <Conexiones paciente={paciente} />
 
       {/* Recetario */}
       <Recetario paciente={paciente} />
