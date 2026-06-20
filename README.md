@@ -1,4 +1,4 @@
-# Mente Serena
+# Aura
 
 App de acompañamiento para pacientes en terapia, con dirección clínica especializada en TCA.
 Proyecto **Vite + React + Supabase**: cuentas, roles, persistencia real y una interfaz serena,

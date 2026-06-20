@@ -1,5 +1,5 @@
 // ============================================================================
-//  MENTE SERENA — Funciones de bienestar y seguridad
+//  AURA — Funciones de bienestar y seguridad
 //  Plan de seguridad, Medicación (con recordatorios de calendario), Ajustes
 //  (bloqueo con PIN) y el botón flotante de SOS.
 // ============================================================================

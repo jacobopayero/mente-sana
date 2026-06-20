@@ -1,5 +1,5 @@
 // ============================================================================
-//  MENTE SERENA — Recetario
+//  AURA — Recetario
 //  El profesional (psiquiatra/terapeuta) envía recetas al paciente; el paciente
 //  las consulta. SALVAGUARDA: medicación clínica, sin métricas corporales.
 // ============================================================================

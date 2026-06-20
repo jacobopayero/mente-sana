@@ -1,5 +1,5 @@
 -- ============================================================================
---  MENTE SERENA — Funciones y políticas adicionales (Fase 2)
+--  AURA — Funciones y políticas adicionales (Fase 2)
 --  Ejecutar DESPUÉS de 01_esquema.sql en el SQL Editor de Supabase.
 --
 --  Completa lo necesario para que el registro de cuentas y el panel del

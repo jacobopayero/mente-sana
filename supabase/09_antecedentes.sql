@@ -1,5 +1,5 @@
 -- ============================================================================
---  MENTE SERENA — Checklist de antecedentes  ·  Ejecutar tras 01-08.
+--  AURA — Checklist de antecedentes  ·  Ejecutar tras 01-08.
 --
 --  Antecedentes como datos ESTRUCTURADOS (lista de marcas) para poder analizar
 --  y generar estadística (no texto libre). Campos sensibles, con consentimiento.

@@ -1,5 +1,5 @@
 -- ============================================================================
---  MENTE SERENA — Teleconsulta y rol central (HQ)  ·  Ejecutar tras 01-06.
+--  AURA — Teleconsulta y rol central (HQ)  ·  Ejecutar tras 01-06.
 --
 --  IMPORTANTE: la GRABACIÓN de llamadas requiere consentimiento explícito de
 --  las partes y una integración telefónica externa (p. ej. Twilio). Esta tabla

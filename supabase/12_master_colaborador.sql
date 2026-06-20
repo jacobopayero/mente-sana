@@ -1,5 +1,5 @@
 -- ============================================================================
---  MENTE SERENA — Médico master / colaborador y autorizaciones
+--  AURA — Médico master / colaborador y autorizaciones
 --  Ejecutar tras 01-11.
 --
 --  Estructura en 3 áreas: app del paciente, app del médico MASTER (titular de

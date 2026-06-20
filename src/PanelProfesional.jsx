@@ -1,5 +1,5 @@
 // ============================================================================
-//  MENTE SERENA — Panel del profesional (Fase 2)
+//  AURA — Panel del profesional (Fase 2)
 //  Para roles 'terapeuta', 'psiquiatra' y 'admin'.
 //
 //  El profesional ve a sus pacientes a cargo y, por cada uno: su ánimo y sueño

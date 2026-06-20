@@ -1,5 +1,5 @@
 // ============================================================================
-//  MENTE SERENA — Análisis con IA + Estadísticas (para el profesional)
+//  AURA — Análisis con IA + Estadísticas (para el profesional)
 //
 //  Calcula estadísticas a partir de los datos que el paciente YA registró
 //  (ánimo, emociones, sueño, adherencia) y muestra un resumen de comportamiento.

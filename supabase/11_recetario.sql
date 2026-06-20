@@ -1,5 +1,5 @@
 -- ============================================================================
---  MENTE SERENA — Médico principal/secundario y recetario  ·  Ejecutar tras 01-10.
+--  AURA — Médico principal/secundario y recetario  ·  Ejecutar tras 01-10.
 --
 --  - Marca el médico PRINCIPAL del caso en el vínculo de cuidado.
 --  - Recetario: el profesional envía recetas al paciente; el paciente las ve.

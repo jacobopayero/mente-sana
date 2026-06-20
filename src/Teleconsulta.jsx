@@ -1,5 +1,5 @@
 // ============================================================================
-//  MENTE SERENA — Teleconsulta (número asociado + registro de consultas)
+//  AURA — Teleconsulta (número asociado + registro de consultas)
 //
 //  IMPORTANTE (legal y técnico): grabar una llamada requiere CONSENTIMIENTO
 //  explícito de las partes y una integración telefónica (p. ej. Twilio) con un

@@ -1,5 +1,5 @@
 // ============================================================================
-//  MENTE SERENA — Mi perfil y ficha clínica (historia médica)
+//  AURA — Mi perfil y ficha clínica (historia médica)
 //
 //  El paciente edita su nombre, su foto y su ficha clínica.
 //  SALVAGUARDA: la ficha NO pide peso, IMC, calorías ni medidas corporales.

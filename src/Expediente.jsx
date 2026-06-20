@@ -1,5 +1,5 @@
 // ============================================================================
-//  MENTE SERENA — Expediente completo del paciente (para el profesional)
+//  AURA — Expediente completo del paciente (para el profesional)
 //  Consolida TODO el histórico en un documento imprimible / exportable a PDF,
 //  para que el equipo lo conserve en el record clínico.
 //
@@ -86,7 +86,7 @@ export function VistaExpediente({ paciente, profesional, onVolver }) {
         <div style={{ display: "flex", alignItems: "center", gap: 12, borderBottom: "2px solid var(--salvia)", paddingBottom: 12, marginBottom: 8 }}>
           <img src={import.meta.env.BASE_URL + "icono.svg"} alt="" style={{ width: 40, height: 40 }} />
           <div>
-            <div style={{ fontWeight: 800, fontSize: "1.1rem" }}>Mente Serena · Expediente</div>
+            <div style={{ fontWeight: 800, fontSize: "1.1rem" }}>Aura · Expediente</div>
             <div style={{ fontSize: "0.82rem", color: "var(--tinta-suave)" }}>
               Generado el {fecha(new Date().toISOString())}
               {generadoPor ? ` · por ${generadoPor}` : ""}
@@ -179,7 +179,7 @@ export function VistaExpediente({ paciente, profesional, onVolver }) {
         </Seccion>
 
         <p style={{ fontSize: "0.75rem", color: "var(--tinta-suave)", marginTop: 18, borderTop: "1px solid #eee", paddingTop: 8 }}>
-          Documento confidencial generado por Mente Serena. Uso exclusivo del equipo de cuidado.
+          Documento confidencial generado por Aura. Uso exclusivo del equipo de cuidado.
           No sustituye el criterio clínico. Datos protegidos conforme a la Ley 172-13 (RD).
           <br />
           {AVISO_LEGAL}

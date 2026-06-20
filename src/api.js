@@ -1,5 +1,5 @@
 // ============================================================================
-//  MENTE SERENA — Capa de datos (Fase 1)
+//  AURA — Capa de datos (Fase 1)
 //  Conecta la app React al backend (Supabase).
 //
 //  Si Supabase no está configurado (sin variables de entorno), todas las

@@ -1,5 +1,5 @@
 -- ============================================================================
---  MENTE SERENA — Esquema de base de datos (Fase 1)
+--  AURA — Esquema de base de datos (Fase 1)
 --  PostgreSQL / Supabase
 --
 --  Herramienta clínica de acompañamiento para pacientes en terapia.

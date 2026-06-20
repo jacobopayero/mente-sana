@@ -1,5 +1,5 @@
 // ============================================================================
-//  MENTE SERENA — Plan anual / Suscripción (con prueba gratis)
+//  AURA — Plan anual / Suscripción (con prueba gratis)
 //  Pantalla informativa (el demo queda abierto). Simula la prueba gratis de 7
 //  días y la suscripción anual para mostrar el flujo y el estado; el cobro real
 //  se conecta después.

@@ -1,5 +1,5 @@
 -- ============================================================================
---  MENTE SERENA — Perfil del paciente y ficha clínica  ·  Ejecutar tras 01-04.
+--  AURA — Perfil del paciente y ficha clínica  ·  Ejecutar tras 01-04.
 --
 --  SALVAGUARDAS: la ficha clínica NO incluye peso, IMC, calorías ni medidas
 --  corporales. Recoge contexto clínico seguro (alergias, condiciones

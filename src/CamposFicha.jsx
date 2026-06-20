@@ -1,5 +1,5 @@
 // ============================================================================
-//  MENTE SERENA — Campos de la ficha clínica / anamnesis (definición central)
+//  AURA — Campos de la ficha clínica / anamnesis (definición central)
 //  Se reutiliza en: Mi perfil (paciente), edición del profesional y expediente.
 //
 //  SALVAGUARDA: ningún campo de peso, IMC, calorías ni medidas corporales.

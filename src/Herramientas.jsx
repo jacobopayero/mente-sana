@@ -1,5 +1,5 @@
 // ============================================================================
-//  MENTE SERENA — Caja de herramientas
+//  AURA — Caja de herramientas
 //  Ejercicios breves para momentos difíciles: respiración guiada animada,
 //  anclaje 5-4-3-2-1 y una pausa de autocompasión. No requieren conexión.
 // ============================================================================

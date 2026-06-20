@@ -1,5 +1,5 @@
 // ============================================================================
-//  MENTE SERENA — Bienvenida, consentimiento informado y aviso de emergencia
+//  AURA — Bienvenida, consentimiento informado y aviso de emergencia
 //  Se muestra una sola vez por dispositivo, antes de usar la app.
 //  IMPORTANTE: el texto legal/clínico debe revisarlo la dirección clínica y un
 //  asesor legal (Ley 172-13) antes de abrir a pacientes reales.
@@ -26,7 +26,7 @@ export default function Bienvenida({ alAceptar }) {
     <div className="acceso" style={{ paddingTop: 28, paddingBottom: 28 }}>
       <div className="marca">
         <img src={import.meta.env.BASE_URL + "icono.svg"} alt="" />
-        <h1>Bienvenida a Mente Serena</h1>
+        <h1>Bienvenida a Aura</h1>
         <p>Un acompañamiento sereno entre tus sesiones de terapia.</p>
       </div>
 
@@ -74,7 +74,7 @@ export default function Bienvenida({ alAceptar }) {
           onChange={(e) => setAcepto(e.target.checked)}
           style={{ width: 20, height: 20, accentColor: "var(--salvia)", marginTop: 2, flexShrink: 0 }}
         />
-        Entiendo que Mente Serena acompaña mi proceso y <strong>no sustituye</strong> la atención
+        Entiendo que Aura acompaña mi proceso y <strong>no sustituye</strong> la atención
         médica ni de emergencia, y acepto usarla con ese fin.
       </label>
 

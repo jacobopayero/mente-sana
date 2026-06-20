@@ -1,5 +1,5 @@
 -- ============================================================================
---  MENTE SERENA — Anamnesis ampliada (motivo, síntomas, sociodemográficos,
+--  AURA — Anamnesis ampliada (motivo, síntomas, sociodemográficos,
 --  objetivos y evaluación de riesgo)  ·  Ejecutar tras 01-09.
 --
 --  Basado en componentes estándar de fichas de admisión en salud mental.

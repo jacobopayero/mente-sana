@@ -1,5 +1,5 @@
 -- ============================================================================
---  MENTE SERENA — Extensión: plan de seguridad y medicamentos (Fase 2+)
+--  AURA — Extensión: plan de seguridad y medicamentos (Fase 2+)
 --  Ejecutar DESPUÉS de 01_esquema.sql y 02_funciones.sql.
 --
 --  SALVAGUARDAS: medicamentos NO incluye métricas corporales; el plan de

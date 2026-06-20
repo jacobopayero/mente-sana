@@ -1,6 +1,6 @@
 {
-  "appId": "do.menteserena.app",
-  "appName": "Mente Serena",
+  "appId": "do.aura.app",
+  "appName": "Aura",
   "webDir": "dist",
   "backgroundColor": "#F5F2EC",
   "ios": {

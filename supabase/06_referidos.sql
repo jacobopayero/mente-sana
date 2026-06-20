@@ -1,5 +1,5 @@
 -- ============================================================================
---  MENTE SERENA — Registro de referidos (profesional → profesional)
+--  AURA — Registro de referidos (profesional → profesional)
 --  Ejecutar tras 01-05.
 --
 --  Deja constancia de quién refirió a cada paciente (p. ej. un psiquiatra

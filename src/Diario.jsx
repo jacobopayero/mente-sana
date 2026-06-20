@@ -1,5 +1,5 @@
 // ============================================================================
-//  MENTE SERENA — Diario (journaling)
+//  AURA — Diario (journaling)
 //  Espacio privado de escritura, con sugerencias suaves para empezar.
 //  SALVAGUARDA: escritura reflexiva; nunca pide cifras ni métricas corporales.
 // ============================================================================

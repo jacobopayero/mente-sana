@@ -64,7 +64,7 @@ function semilla() {
   // Médico "central" / dirección de la app (HQ).
   const central = {
     id: "demo-central",
-    nombre: "Dirección Mente Serena",
+    nombre: "Dirección Aura",
     nombre_formal: "Dirección clínica",
     titulo: "",
     rol: "admin",

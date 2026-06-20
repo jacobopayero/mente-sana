@@ -1,5 +1,5 @@
 -- ============================================================================
---  MENTE SERENA — Anamnesis ampliada de la ficha clínica  ·  Ejecutar tras 01-07.
+--  AURA — Anamnesis ampliada de la ficha clínica  ·  Ejecutar tras 01-07.
 --
 --  Historia psicosocial del paciente (niñez → actualidad). Campos sensibles
 --  (abuso, consumo) son OPCIONALES y confidenciales.

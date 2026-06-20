@@ -35,7 +35,7 @@ export function construirICS({ titulo, descripcion = "", inicio, durMin = 60, al
   const lineas = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Mente Serena//ES",
+    "PRODID:-//Aura//ES",
     "CALSCALE:GREGORIAN",
     "BEGIN:VEVENT",
     `UID:${uid()}`,
@@ -75,7 +75,7 @@ export function recordarCita(cita) {
   const hora = (cita.hora || "09:00").slice(0, 5);
   const inicio = new Date(`${cita.fecha}T${hora}:00`);
   const ics = construirICS({
-    titulo: "Cita · Mente Serena",
+    titulo: "Cita · Aura",
     descripcion: `${cita.modalidad || ""} · ${cita.tipo || ""}`.trim(),
     inicio,
     durMin: 60,
@@ -105,7 +105,7 @@ export function recordarRegistroAnimo(hora = "20:00") {
   const [h, m] = hora.split(":").map(Number);
   const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), h, m, 0);
   const ics = construirICS({
-    titulo: "Registrar mi ánimo · Mente Serena",
+    titulo: "Registrar mi ánimo · Aura",
     descripcion: "Un momento breve para ti, a tu ritmo.",
     inicio,
     durMin: 10,
@@ -121,7 +121,7 @@ export function recordarTarea(tarea, hora = "09:00") {
   const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), h, m, 0);
   const ics = construirICS({
     titulo: `Tarea · ${tarea.texto}`,
-    descripcion: "Recordatorio de tu acompañamiento en Mente Serena.",
+    descripcion: "Recordatorio de tu acompañamiento en Aura.",
     inicio,
     durMin: 30,
     alarmaMin: 0,

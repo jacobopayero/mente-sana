@@ -1,5 +1,5 @@
 -- ============================================================================
---  MENTE SERENA — Diario (journaling)  ·  Ejecutar tras 01/02/03.
+--  AURA — Diario (journaling)  ·  Ejecutar tras 01/02/03.
 --
 --  Entradas de escritura libre del paciente, con una sugerencia opcional.
 --  SALVAGUARDA: es texto reflexivo; no registra cifras ni métricas corporales.

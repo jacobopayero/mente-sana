@@ -25,7 +25,7 @@ export default function PinLock({ alDesbloquear }) {
     <div className="acceso">
       <div className="marca">
         <img src={import.meta.env.BASE_URL + "icono.svg"} alt="" />
-        <h1>Mente Serena</h1>
+        <h1>Aura</h1>
         <p>Tu espacio está protegido</p>
       </div>
 

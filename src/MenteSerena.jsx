@@ -1,5 +1,5 @@
 // ============================================================================
-//  MENTE SERENA — Interfaz (Fase 1)
+//  AURA — Interfaz (Fase 1)
 //  App de acompañamiento para pacientes en terapia. Dirección clínica en TCA.
 //
 //  SALVAGUARDAS DE DISEÑO (no negociables):
@@ -239,7 +239,7 @@ function PantallaAcceso({ alIngresar }) {
     <div className="acceso">
       <div className="marca">
         <img src={import.meta.env.BASE_URL + "icono.svg"} alt="" />
-        <h1>Mente Serena</h1>
+        <h1>Aura</h1>
         <p>Acompañamiento sereno para tu proceso.</p>
       </div>
 

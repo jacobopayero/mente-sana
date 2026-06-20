@@ -1,5 +1,5 @@
 // ============================================================================
-//  MENTE SERENA — Panel de Administración / Central (HQ)
+//  AURA — Panel de Administración / Central (HQ)
 //  Para el rol 'admin' (médico/dirección que coordina toda la red).
 //  Vista interconectada: profesionales, pacientes, referidos y teleconsultas.
 // ============================================================================
