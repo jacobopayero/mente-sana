@@ -20,7 +20,7 @@ const id = () =>
 
 // ---- Datos de ejemplo (semilla) -------------------------------------------
 function semilla() {
-  const paciente = { id: "demo-paciente", email: "paciente@demo", nombre: "Tú", rol: "paciente", foto_url: "", telefono: "809-555-0123" };
+  const paciente = { id: "demo-paciente", email: "paciente@demo", nombre: "Jacobo Payero", rol: "paciente", foto_url: "", telefono: "809-555-0123" };
   const terapeuta = {
     id: "demo-terapeuta",
     nombre: "Alexandra García",
@@ -37,27 +37,16 @@ function semilla() {
       },
     ],
   };
-  // Psiquiatras del caso.
-  const psiquiatraMusa = {
-    id: "demo-psiquiatra-musa",
-    nombre: "Musa",
-    nombre_formal: "Musa",
-    titulo: "Dr.",
+  // Psiquiatra colaboradora del caso.
+  const psiquiatra = {
+    id: "demo-psiquiatra-cindy",
+    nombre: "Cindy Rodríguez",
+    nombre_formal: "Cindy Rodríguez",
+    titulo: "Dra.",
     rol: "psiquiatra",
     tipo: "colaborador",
     perfiles_profesional: [
       { especialidad: "Especialista en TCA", credenciales: "Médico Psiquiatra", color_hex: "#6d6a9e" },
-    ],
-  };
-  const psiquiatraRodriguez = {
-    id: "demo-psiquiatra-rodriguez",
-    nombre: "Rodríguez",
-    nombre_formal: "Rodríguez",
-    titulo: "Dr.",
-    rol: "psiquiatra",
-    tipo: "colaborador",
-    perfiles_profesional: [
-      { especialidad: "Especialista en TCA", credenciales: "Médico Psiquiatra", color_hex: "#7a6fa6" },
     ],
   };
 
@@ -74,8 +63,8 @@ function semilla() {
   // Asistente / secretaria del médico (acceso limitado).
   const asistente = {
     id: "demo-asistente",
-    nombre: "Carla",
-    nombre_formal: "Carla (Asistente)",
+    nombre: "Carolina Méndez",
+    nombre_formal: "Carolina Méndez (Asistente)",
     titulo: "",
     rol: "asistente",
     email: "asistente@demo",
@@ -84,11 +73,11 @@ function semilla() {
   return {
     sesion: null, // se llena al iniciar sesión
     perfil: paciente,
-    equipo: [terapeuta, psiquiatraMusa, psiquiatraRodriguez],
+    equipo: [terapeuta, psiquiatra],
     central,
     asistente,
     // Autorizaciones que el médico master concede a colaboradores.
-    autorizaciones: { [psiquiatraMusa.id]: true, [psiquiatraRodriguez.id]: false },
+    autorizaciones: { [psiquiatra.id]: true },
     // Permisos del/los asistente(s): acceso y si puede "sellar" indicaciones.
     asistentes_perm: { [asistente.id]: { autorizado: true, sellar: false } },
     numero_asociado: "",
@@ -108,7 +97,7 @@ function semilla() {
       {
         id: id(),
         paciente_id: paciente.id,
-        profesional_nombre: "Dr. Musa",
+        profesional_nombre: "Dra. Cindy Rodríguez",
         medicamento: "Sertralina",
         dosis: "50 mg",
         frecuencia: "1 vez al día",
@@ -154,14 +143,14 @@ function semilla() {
     diario: [
       { id: id(), paciente_id: paciente.id, sugerencia: "¿Qué necesité hoy?", texto: "Necesité ir más despacio y pedir ayuda. Lo hice.", creado_en: diasAtras(3) },
     ],
-    // Registro de referidos (profesional → profesional). Ej.: el Dr. Musa
-    // refirió a la paciente a la terapeuta.
+    // Registro de referidos (profesional → profesional). Ej.: la Dra. Cindy
+    // Rodríguez refirió al paciente a la terapeuta.
     referidos: [
       {
         id: id(),
         paciente_nombre: paciente.nombre,
-        referido_por_id: psiquiatraMusa.id,
-        referido_por_nombre: "Dr. Musa",
+        referido_por_id: psiquiatra.id,
+        referido_por_nombre: "Dra. Cindy Rodríguez",
         hacia_id: terapeuta.id,
         hacia_nombre: "Lic. Alexandra García",
         nota: "Derivación para terapia familiar/TCA.",
