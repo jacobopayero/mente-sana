@@ -136,6 +136,11 @@ function semilla() {
       paciente_id: paciente.id,
       antecedentes: [],
       sintomas: [],
+      // Sistema familiar (enfoque sistémico): miembros y dinámica.
+      sistema_familiar: [
+        { nombre: "Rosa", parentesco: "Madre", edad: "58", nota: "Muy cercana; sobreprotectora." },
+        { nombre: "Luis", parentesco: "Padre", edad: "60", nota: "Relación distante." },
+      ],
       fecha_nacimiento: "",
       genero: "",
       contacto_emergencia: "",

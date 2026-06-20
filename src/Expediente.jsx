@@ -118,6 +118,16 @@ export function VistaExpediente({ paciente, profesional, onVolver }) {
           )}
         </Seccion>
 
+        {Array.isArray(d.ficha.sistema_familiar) && d.ficha.sistema_familiar.length > 0 && (
+          <Seccion titulo="Sistema familiar (genograma)">
+            {d.ficha.sistema_familiar.map((m, i) => (
+              <Fila key={i}>
+                <strong>{m.nombre}</strong> · {m.parentesco}{m.edad ? ` · ${m.edad} años` : ""}{m.nota ? ` — ${m.nota}` : ""}
+              </Fila>
+            ))}
+          </Seccion>
+        )}
+
         {/* Medicación */}
         <Seccion titulo="Medicación">
           {d.meds.length ? d.meds.map((m) => (
