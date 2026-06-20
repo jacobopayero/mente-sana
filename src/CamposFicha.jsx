@@ -6,15 +6,29 @@
 //  Campos sensibles (abuso, consumo) son OPCIONALES y confidenciales.
 //  Los antecedentes y síntomas son MARCAS (datos estructurados) para análisis.
 // ============================================================================
+import { useState } from "react";
+
+// Lista de ocupaciones (con opción "Otra" para escribir libremente).
+export const OCUPACIONES = [
+  "Estudiante", "Docente / Profesor(a)", "Médico/a", "Enfermero/a", "Psicólogo/a",
+  "Ingeniero/a", "Abogado/a", "Contador/a", "Administrador/a", "Comerciante",
+  "Empresario/a", "Diseñador/a", "Programador/a", "Vendedor/a", "Chofer",
+  "Ama/o de casa", "Jubilado/a", "Desempleado/a", "Militar / Policía", "Artista",
+  "Agricultor/a", "Obrero/a",
+];
+
+// Rango de fechas de nacimiento: hasta 110 años de edad.
+const HOY_ISO = new Date().toISOString().slice(0, 10);
+const MIN_NAC_ISO = `${new Date().getFullYear() - 110}-01-01`;
 
 export const GRUPOS_FICHA = [
   {
     titulo: "Datos generales",
     campos: [
       { k: "fecha_nacimiento", label: "Fecha de nacimiento", tipo: "date" },
-      { k: "genero", label: "Género", tipo: "text", ph: "Cómo se identifica" },
+      { k: "genero", label: "Sexo / género", tipo: "select", opciones: ["Femenino", "Masculino", "Otro", "Prefiero no decir"] },
       { k: "estado_civil", label: "Estado civil", tipo: "select", opciones: ["Soltero/a", "En pareja", "Casado/a", "Divorciado/a", "Viudo/a"] },
-      { k: "ocupacion", label: "Ocupación", tipo: "text", ph: "A qué se dedica" },
+      { k: "ocupacion", label: "Ocupación", tipo: "select-otro", opciones: OCUPACIONES },
       { k: "escolaridad", label: "Escolaridad", tipo: "select", opciones: ["Primaria", "Secundaria", "Técnico", "Universitario", "Posgrado", "Ninguna"] },
       { k: "convivencia", label: "¿Con quién vive?", tipo: "select", opciones: ["Solo/a", "Con pareja", "Con padres", "Con familia", "Compañeros", "Otro"] },
       { k: "religion", label: "Religión / creencias", tipo: "text", ph: "Opcional" },
@@ -138,6 +152,43 @@ function toggleEnLista(lista, item) {
   return [...s];
 }
 
+// Select con opción "Otra (especificar)" para escribir un valor libre.
+function SelectOtro({ valor, opciones, onChange, ph }) {
+  const enLista = opciones.includes(valor || "");
+  const [otra, setOtra] = useState(Boolean(valor) && !enLista);
+  return (
+    <>
+      <select
+        value={otra ? "__otra__" : valor || ""}
+        onChange={(e) => {
+          const v = e.target.value;
+          if (v === "__otra__") {
+            setOtra(true);
+            onChange("");
+          } else {
+            setOtra(false);
+            onChange(v);
+          }
+        }}
+      >
+        <option value="">Seleccionar…</option>
+        {opciones.map((o) => (
+          <option key={o} value={o}>{o}</option>
+        ))}
+        <option value="__otra__">Otra (especificar)…</option>
+      </select>
+      {otra && (
+        <input
+          style={{ marginTop: 8 }}
+          value={valor || ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={ph || "Especifica"}
+        />
+      )}
+    </>
+  );
+}
+
 // Formulario reutilizable de la ficha (paciente o profesional).
 export function CamposFicha({ ficha, setF }) {
   return (
@@ -172,6 +223,16 @@ export function CamposFicha({ ficha, setF }) {
                     <option key={o} value={o}>{o}</option>
                   ))}
                 </select>
+              ) : c.tipo === "select-otro" ? (
+                <SelectOtro valor={ficha[c.k]} opciones={c.opciones} onChange={(v) => setF(c.k, v)} ph={c.ph} />
+              ) : c.tipo === "date" ? (
+                <input
+                  type="date"
+                  value={ficha[c.k] || ""}
+                  min={MIN_NAC_ISO}
+                  max={HOY_ISO}
+                  onChange={(e) => setF(c.k, e.target.value)}
+                />
               ) : (
                 <input type={c.tipo} value={ficha[c.k] || ""} onChange={(e) => setF(c.k, e.target.value)} placeholder={c.ph || ""} />
               )}

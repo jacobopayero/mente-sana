@@ -178,7 +178,7 @@ function semilla() {
       fecha_nacimiento: "1996-04-12",
       genero: "Masculino",
       estado_civil: "En pareja",
-      ocupacion: "Diseñador gráfico",
+      ocupacion: "Diseñador/a",
       escolaridad: "Universitario",
       convivencia: "Con pareja",
       religion: "Católico",
