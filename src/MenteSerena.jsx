@@ -31,7 +31,6 @@ import {
 } from "lucide-react";
 
 import PanelProfesional from "./PanelProfesional.jsx";
-import PanelAdmin from "./PanelAdmin.jsx";
 import PinLock from "./PinLock.jsx";
 import {
   VistaMedicacion,
@@ -184,9 +183,6 @@ export default function MenteSerena() {
     return <PantallaAcceso alIngresar={refrescarPerfil} />;
   }
 
-  if (perfil.rol === "admin") {
-    return <PanelAdmin perfil={perfil} alSalir={refrescarPerfil} />;
-  }
   if (["terapeuta", "psiquiatra"].includes(perfil.rol)) {
     return <PanelProfesional perfil={perfil} alSalir={refrescarPerfil} />;
   }
