@@ -8,6 +8,9 @@
 // ============================================================================
 
 const CLAVE = "mente-serena-demo";
+// Subir esta versión fuerza recargar el caso de demostración (sobrescribe los
+// datos viejos guardados en el navegador). Súbela cuando cambie la semilla.
+const SEED_VERSION = 3;
 const hoy = () => new Date().toISOString().slice(0, 10);
 const diasAtras = (n) => {
   const d = new Date();
@@ -71,6 +74,7 @@ function semilla() {
   };
 
   return {
+    _v: SEED_VERSION,
     sesion: null, // se llena al iniciar sesión
     perfil: paciente,
     equipo: [terapeuta, psiquiatra],
@@ -235,7 +239,12 @@ function semilla() {
 function leer() {
   try {
     const guardado = localStorage.getItem(CLAVE);
-    if (guardado) return JSON.parse(guardado);
+    if (guardado) {
+      const data = JSON.parse(guardado);
+      // Si la versión coincide, usamos los datos guardados; si no, recargamos
+      // el caso de demostración actualizado.
+      if (data && data._v === SEED_VERSION) return data;
+    }
   } catch (_) {
     /* ignore */
   }
