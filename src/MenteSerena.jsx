@@ -254,11 +254,8 @@ function PantallaAcceso({ alIngresar }) {
           <button className="btn secundario" style={{ marginBottom: 10 }} onClick={() => entrarDemo("terapeuta")}>
             Entrar como médico master (demo)
           </button>
-          <button className="btn secundario" style={{ marginBottom: 10 }} onClick={() => entrarDemo("psiquiatra")}>
+          <button className="btn secundario" onClick={() => entrarDemo("psiquiatra")}>
             Entrar como médico colaborador (demo)
-          </button>
-          <button className="btn secundario" onClick={() => entrarDemo("admin")}>
-            Entrar como central / HQ (demo)
           </button>
         </div>
       )}
